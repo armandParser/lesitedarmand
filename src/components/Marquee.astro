@@ -1,0 +1,27 @@
+---
+interface Props {
+  items: string[];
+  speed?: string;
+}
+const { items, speed = '38s' } = Astro.props;
+const track = [...items, ...items];
+---
+
+<div class="marquee" style={`--speed: ${speed};`} aria-hidden="true">
+  <div class="marquee__track">
+    {track.map((item) => (
+      <span class="marquee__item">
+        <span class="marquee__dot"></span>
+        <span>{item}</span>
+      </span>
+    ))}
+  </div>
+  <div class="marquee__track">
+    {track.map((item) => (
+      <span class="marquee__item">
+        <span class="marquee__dot"></span>
+        <span>{item}</span>
+      </span>
+    ))}
+  </div>
+</div>

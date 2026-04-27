@@ -1,0 +1,16 @@
+---
+interface Props {
+  pattern?: string;
+  label?: string;
+}
+const { pattern = '· ─ · ─ · ─ ', label } = Astro.props;
+const repeat = 80;
+const line = pattern.repeat(repeat);
+---
+
+<div class="shell" aria-hidden="true">
+  <div class="row between gap-2" style="align-items: center; padding-block: 0.6rem;">
+    <span class="ascii">{line}</span>
+    {label && <span class="upper" style="color: var(--mute); white-space: nowrap;">{label}</span>}
+  </div>
+</div>

@@ -1,0 +1,22 @@
+---
+interface Props {
+  index: number;
+  title: string;
+  description: string;
+  meta: string;
+  href?: string;
+}
+const { index, title, description, meta, href } = Astro.props;
+const num = String(index + 1).padStart(2, '0');
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag class="project" href={href} target={href?.startsWith('http') ? '_blank' : undefined} rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}>
+  <span class="project__num">{num}</span>
+  <span class="project__title">{title}</span>
+  <span class="project__desc">{description}</span>
+  <span class="project__meta">
+    {meta}
+    {href && <span class="arrow" style="margin-left: 0.6ch;">↗</span>}
+  </span>
+</Tag>

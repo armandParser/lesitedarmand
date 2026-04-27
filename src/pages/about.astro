@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import AsciiDivider from '../components/AsciiDivider.astro';
+import DitherShape from '../components/DitherShape.astro';
+---
+
+<Layout title="About — Armand Collier" description="Software developer building SaaS apps and websites.">
+  <Header />
+
+  <main>
+    <section class="hero shell">
+      <span class="eyebrow">Index / About</span>
+      <h1 class="display" style="margin-top: 1rem;">
+        Hi — I'm <em style="font-style: italic; color: var(--accent);">Armand</em><span class="caret"></span>
+      </h1>
+      <p class="hero__sub">
+        Software developer. I design and build SaaS products and websites for
+        founders, small teams, and myself.
+      </p>
+      <div class="hero__shape">
+        <DitherShape size={240} />
+      </div>
+    </section>
+
+    <AsciiDivider label="Profile" />
+
+    <section class="section shell">
+      <div class="about-grid">
+        <p>
+          I work end-to-end: brief, design, build, ship, iterate. No handoffs.
+        </p>
+        <div class="body">
+          <p>
+            My stack is TypeScript everywhere — Astro and React on the front,
+            Node and Postgres on the back. I care about type safety, fast
+            interfaces, accessible markup, and shipping. Tools change; the bias
+            toward small, sharp work doesn't.
+          </p>
+          <p>
+            I take a small number of client builds each quarter and spend the
+            rest of my time on my own SaaS products. If you've got something
+            small and well-defined, I'm probably interested.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <AsciiDivider label="Currently" pattern="× " />
+
+    <section class="section shell">
+      <div class="about-grid">
+        <p>Now.</p>
+        <div class="body">
+          <p>— Building two SaaS products, both pre-launch.</p>
+          <p>— Taking 1–2 client builds per quarter.</p>
+          <p>— Reading more, tweeting less.</p>
+          <p>— Based out of Lisbon, working remote with teams worldwide.</p>
+        </div>
+      </div>
+    </section>
+
+    <AsciiDivider label="Stack" pattern="◇ " />
+
+    <section class="section shell">
+      <div class="about-grid">
+        <p>Tools I lean on.</p>
+        <div class="body" style="display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.5rem 2rem; max-width: 540px;">
+          <span>TypeScript</span><span class="meta">core</span>
+          <span>Astro</span><span class="meta">sites</span>
+          <span>React / Next</span><span class="meta">apps</span>
+          <span>Node / Hono</span><span class="meta">apis</span>
+          <span>Postgres</span><span class="meta">data</span>
+          <span>Stripe</span><span class="meta">money</span>
+          <span>Tailwind / vanilla CSS</span><span class="meta">style</span>
+          <span>Vercel / Fly</span><span class="meta">infra</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact shell">
+      <p class="contact__big">
+        <a href="mailto:armandcollier24@gmail.com">say hi<span class="caret"></span></a>
+      </p>
+      <div class="stack gap-2">
+        <span class="eyebrow">Email</span>
+        <a class="link" href="mailto:armandcollier24@gmail.com">armandcollier24@gmail.com <span class="arrow">↗</span></a>
+      </div>
+      <div class="stack gap-2">
+        <span class="eyebrow">Code</span>
+        <a class="link" href="https://github.com/armandParser">github.com/armandParser <span class="arrow">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
