@@ -3,69 +3,76 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import AsciiDivider from '../components/AsciiDivider.astro';
-import DitherShape from '../components/DitherShape.astro';
+import SunShape from '../components/SunShape.astro';
+import { t } from '../i18n/translations';
+
+const lang = 'en';
+const tr = t(lang);
+const a = tr.about;
 ---
 
-<Layout title="About — Armand Collier" description="Software developer building SaaS apps and websites.">
-  <Header />
+<Layout title="About — Armand Collier" description="Software developer building SaaS apps and websites." lang={lang}>
+  <Header lang={lang} />
 
   <main>
     <section class="hero shell">
-      <span class="eyebrow">Index / About</span>
+      <span class="eyebrow">{a.eyebrow}</span>
       <h1 class="display" style="margin-top: 1rem;">
-        Hi — I'm <em style="font-style: italic; color: var(--accent);">Armand</em><span class="caret"></span>
+        <Fragment set:html={a.title} /><span class="caret"></span>
       </h1>
-      <p class="hero__sub">
-        Software developer. I design and build SaaS products and websites for
-        founders, small teams, and myself.
-      </p>
+      <p class="hero__sub">{a.sub}</p>
       <div class="hero__shape">
-        <DitherShape size={240} />
+        <SunShape size={240} />
       </div>
     </section>
 
-    <AsciiDivider label="Profile" />
+    <AsciiDivider label={a.dividerProfile} />
 
     <section class="section shell">
       <div class="about-grid">
-        <p>
-          I work end-to-end: brief, design, build, ship, iterate. No handoffs.
-        </p>
+        <p>{a.profileLead}</p>
         <div class="body">
-          <p>
-            My stack is TypeScript everywhere — Astro and React on the front,
-            Node and Postgres on the back. I care about type safety, fast
-            interfaces, accessible markup, and shipping. Tools change; the bias
-            toward small, sharp work doesn't.
-          </p>
-          <p>
-            I take a small number of client builds each quarter and spend the
-            rest of my time on my own SaaS products. If you've got something
-            small and well-defined, I'm probably interested.
-          </p>
+          <p>{a.profileBody1}</p>
+          <p>{a.profileBody2}</p>
         </div>
       </div>
     </section>
 
-    <AsciiDivider label="Currently" pattern="× " />
+    <AsciiDivider label={a.dividerExperience} pattern="◈ " />
 
     <section class="section shell">
       <div class="about-grid">
-        <p>Now.</p>
+        <p>{a.experienceLead}</p>
         <div class="body">
-          <p>— Building two SaaS products, both pre-launch.</p>
-          <p>— Taking 1–2 client builds per quarter.</p>
-          <p>— Reading more, tweeting less.</p>
-          <p>— Based out of Lisbon, working remote with teams worldwide.</p>
+          {a.experience.map(e => (
+            <div class="exp-row">
+              <span class="exp-role">{e.role}{e.org && <> — <strong>{e.org}</strong></>}</span>
+              <span class="exp-right">
+                <span class="meta">{e.detail}</span>
+                <span class="exp-period">{e.period}</span>
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </section>
 
-    <AsciiDivider label="Stack" pattern="◇ " />
+    <AsciiDivider label={a.dividerCurrent} pattern="× " />
 
     <section class="section shell">
       <div class="about-grid">
-        <p>Tools I lean on.</p>
+        <p>{a.now}</p>
+        <div class="body">
+          {a.currentItems.map(item => <p>{item}</p>)}
+        </div>
+      </div>
+    </section>
+
+    <AsciiDivider label={a.dividerStack} pattern="◇ " />
+
+    <section class="section shell">
+      <div class="about-grid">
+        <p>{a.stackLead}</p>
         <div class="body" style="display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.5rem 2rem; max-width: 540px;">
           <span>TypeScript</span><span class="meta">core</span>
           <span>Astro</span><span class="meta">sites</span>
@@ -79,20 +86,41 @@ import DitherShape from '../components/DitherShape.astro';
       </div>
     </section>
 
+    <section class="section shell">
+      <div class="about-grid">
+        <p class="lang-stat-label">{a.githubStatsLabel}</p>
+        <div class="body">
+          <div class="lang-bar">
+            {a.githubStats.map(s => (
+              <span class="lang-bar__seg" style={`width:${s.pct}%`} title={`${s.lang} ${s.pct}%`}></span>
+            ))}
+          </div>
+          <div class="lang-legend">
+            {a.githubStats.map(s => (
+              <span class="lang-legend__item">
+                <span class="lang-legend__name">{s.lang}</span>
+                <span class="meta">{s.pct}%</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="contact shell">
       <p class="contact__big">
-        <a href="mailto:armandcollier24@gmail.com">say hi<span class="caret"></span></a>
+        <a href="mailto:armand@parser-lab.com">{a.sayHi}<span class="caret"></span></a>
       </p>
       <div class="stack gap-2">
-        <span class="eyebrow">Email</span>
-        <a class="link" href="mailto:armandcollier24@gmail.com">armandcollier24@gmail.com <span class="arrow">↗</span></a>
+        <span class="eyebrow">{a.emailLabel}</span>
+        <a class="link" href="mailto:armand@parser-lab.com">armand@parser-lab.com <span class="arrow">↗</span></a>
       </div>
       <div class="stack gap-2">
-        <span class="eyebrow">Code</span>
+        <span class="eyebrow">{a.codeLabel}</span>
         <a class="link" href="https://github.com/armandParser">github.com/armandParser <span class="arrow">↗</span></a>
       </div>
     </section>
   </main>
 
-  <Footer />
+  <Footer lang={lang} />
 </Layout>

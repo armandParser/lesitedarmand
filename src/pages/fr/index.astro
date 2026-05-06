@@ -1,0 +1,102 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import AsciiDivider from '../../components/AsciiDivider.astro';
+import SunShape from '../../components/SunShape.astro';
+import ProjectRow from '../../components/ProjectRow.astro';
+import { projects } from '../../data/projects.ts';
+import { t } from '../../i18n/translations';
+
+const lang = 'fr';
+const tr = t(lang);
+const h = tr.home;
+const featured = projects.slice(0, 3);
+---
+
+<Layout title="Armand Collier — Développeur logiciel" description="Armand Collier — développeur logiciel qui construit des apps SaaS et des sites web." lang={lang}>
+  <Header lang={lang} />
+
+  <main>
+    <section class="hero shell">
+      <div class="row gap-2" style="margin-bottom: 1.6rem; align-items: center;">
+        <span class="status"><span class="pulse"></span> {h.status}</span>
+        <span class="meta">{h.location}</span>
+      </div>
+      <h1 class="display hero__title">
+        {h.titleLine1}<br />
+        <Fragment set:html={h.titleLine2} /><br />
+        <Fragment set:html={h.titleLine3} /><span class="caret"></span>
+      </h1>
+      <p class="hero__sub">{h.sub}</p>
+      <div class="row gap-2" style="margin-top: 2rem; flex-wrap: wrap;">
+        <a class="btn accent" href="/fr/work">{h.ctaWork}</a>
+        <a class="btn" href="mailto:armand@parser-lab.com">{h.ctaContact}</a>
+      </div>
+      <div class="hero__shape">
+        <SunShape size={280} />
+      </div>
+    </section>
+
+    <!-- <AsciiDivider label={h.dividerWork} /> -->
+
+    <section class="section shell">
+      <div class="section__head">
+        <div class="stack gap-1">
+          <span class="eyebrow">{h.eyebrow}</span>
+          <h2 class="section">
+            {h.sectionTitle.split('\n').map((line, i) => (
+              <>{i > 0 && <br />}{line}</>
+            ))}
+          </h2>
+        </div>
+        <a class="link" href="/fr/work">{h.allProjects} <span class="arrow">↗</span></a>
+      </div>
+
+      <div class="projects">
+        {featured.map((p, i) => (
+          <ProjectRow
+            index={i}
+            title={p.title}
+            description={p.descriptionFr ?? p.description}
+            meta={p.meta}
+            href={p.href}
+          />
+        ))}
+      </div>
+    </section>
+
+    <AsciiDivider label={h.dividerAbout} pattern="∙ " />
+
+    <section class="section shell">
+      <div class="about-grid">
+        <p><Fragment set:html={h.aboutLead} /></p>
+        <div class="body">
+          <p>{h.aboutBody1}</p>
+          <p>{h.aboutBody2}</p>
+          <p>
+            <a class="link" href="/fr/about">{h.moreAbout} <span class="arrow">↗</span></a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact shell" id="contact">
+      <p class="contact__big">
+        {h.contactBig}<br />
+        <a href="mailto:armand@parser-lab.com">{h.contactBig2}<span class="caret"></span></a>
+      </p>
+      <div class="stack gap-2">
+        <span class="eyebrow">{h.contactLabel}</span>
+        <a class="link" href="mailto:armand@parser-lab.com">armand@parser-lab.com <span class="arrow">↗</span></a>
+        <a class="link" href="https://github.com/armandParser">github.com/armandParser <span class="arrow">↗</span></a>
+      </div>
+      <div class="stack gap-2">
+        <span class="eyebrow">{h.whatIDo}</span>
+        {h.services.map(s => <span><Fragment set:html={s} /></span>)}
+      </div>
+    </section>
+  </main>
+
+  <Footer lang={lang} />
+</Layout>

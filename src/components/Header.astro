@@ -1,19 +1,65 @@
 ---
+import type { Lang } from '../i18n/translations';
+import { t } from '../i18n/translations';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const tr = t(lang);
+
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
-  href === '/' ? path === '/' : path.startsWith(href);
+  href === '/' ? path === '/' || path === '/fr' || path === '/fr/'
+    : path.startsWith(href);
+
+const altLang = lang === 'en' ? 'fr' : 'en';
+const altPath = lang === 'en'
+  ? '/fr' + (path === '/' ? '' : path)
+  : path.replace(/^\/fr/, '') || '/';
 ---
 
 <header class="site-header">
   <div class="shell row between">
-    <a href="/" class="brand" aria-label="Armand Collier — home">
+    <a href={lang === 'fr' ? '/fr' : '/'} class="brand" aria-label="Armand Collier — home">
       armand collier<span class="dot">.</span>
     </a>
     <nav aria-label="Primary">
-      <a href="/" aria-current={isActive('/') ? 'page' : undefined}>Index</a>
-      <a href="/work" aria-current={isActive('/work') ? 'page' : undefined}>Work</a>
-      <a href="/about" aria-current={isActive('/about') ? 'page' : undefined}>About</a>
-      <a href="mailto:armandcollier24@gmail.com">Contact</a>
+      <a href={lang === 'fr' ? '/fr' : '/'} aria-current={isActive('/') ? 'page' : undefined}>{tr.nav.index}</a>
+      <a href={lang === 'fr' ? '/fr/work' : '/work'} aria-current={isActive('/work') || isActive('/fr/work') ? 'page' : undefined}>{tr.nav.work}</a>
+      <a href={lang === 'fr' ? '/fr/about' : '/about'} aria-current={isActive('/about') || isActive('/fr/about') ? 'page' : undefined}>{tr.nav.about}</a>
+      <a href="mailto:armand@parser-lab.com">{tr.nav.contact}</a>
+      <a
+        href={altPath}
+        class="lang-switch"
+        aria-label={`Switch to ${altLang === 'fr' ? 'French' : 'English'}`}
+        data-lang={altLang}
+      >{altLang.toUpperCase()}</a>
     </nav>
   </div>
 </header>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('.lang-switch').forEach((el) => {
+    el.addEventListener('click', () => {
+      const lang = el.dataset.lang;
+      if (lang) localStorage.setItem('preferred-lang', lang);
+    });
+  });
+</script>
+
+<style>
+  .lang-switch {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    opacity: 0.5;
+    border: 1px solid currentColor;
+    padding: 0.15em 0.45em;
+    border-radius: 2px;
+    transition: opacity 0.15s;
+  }
+  .lang-switch:hover {
+    opacity: 1;
+  }
+</style>

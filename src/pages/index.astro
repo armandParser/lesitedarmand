@@ -2,54 +2,55 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import Marquee from '../components/Marquee.astro';
 import AsciiDivider from '../components/AsciiDivider.astro';
-import DitherShape from '../components/DitherShape.astro';
+import SunShape from '../components/SunShape.astro';
 import ProjectRow from '../components/ProjectRow.astro';
-import { projects, stack } from '../data/projects.ts';
+import { projects } from '../data/projects.ts';
+import { t } from '../i18n/translations';
 
+const lang = 'en';
+const tr = t(lang);
+const h = tr.home;
 const featured = projects.slice(0, 3);
 ---
 
-<Layout>
-  <Header />
+<Layout lang={lang}>
+  <Header lang={lang} />
 
   <main>
     <section class="hero shell">
       <div class="row gap-2" style="margin-bottom: 1.6rem; align-items: center;">
-        <span class="status"><span class="pulse"></span> Available — Q3 2026</span>
-        <span class="meta">Lisbon / Remote</span>
+        <span class="status"><span class="pulse"></span> {h.status}</span>
+        <span class="meta">{h.location}</span>
       </div>
       <h1 class="display hero__title">
-        Software developer<br />
-        building <em>apps</em> &amp; sites<br />
-        that <em>ship</em><span class="caret"></span>
+        {h.titleLine1}<br />
+        <Fragment set:html={h.titleLine2} /><br />
+        <Fragment set:html={h.titleLine3} /><span class="caret"></span>
       </h1>
-      <p class="hero__sub">
-        I'm Armand. I design and build small, fast, opinionated products — from
-        first commit to first paying customer. Type-safe, no-BS code; interfaces
-        that respect the user's time.
-      </p>
+      <p class="hero__sub">{h.sub}</p>
       <div class="row gap-2" style="margin-top: 2rem; flex-wrap: wrap;">
-        <a class="btn accent" href="/work">View work →</a>
-        <a class="btn" href="mailto:armandcollier24@gmail.com">Start a project</a>
+        <a class="btn accent" href="/work">{h.ctaWork}</a>
+        <a class="btn" href="mailto:armand@parser-lab.com">{h.ctaContact}</a>
       </div>
       <div class="hero__shape">
-        <DitherShape size={280} />
+        <SunShape size={280} />
       </div>
     </section>
 
-    <Marquee items={stack} speed="42s" />
-
-    <AsciiDivider label="Selected work" />
+    <!-- <AsciiDivider label={h.dividerWork} /> -->
 
     <section class="section shell">
       <div class="section__head">
         <div class="stack gap-1">
-          <span class="eyebrow">01 / Selected work</span>
-          <h2 class="section">Things I made and<br />still stand behind.</h2>
+          <span class="eyebrow">{h.eyebrow}</span>
+          <h2 class="section">
+            {h.sectionTitle.split('\n').map((line, i) => (
+              <>{i > 0 && <br />}{line}</>
+            ))}
+          </h2>
         </div>
-        <a class="link" href="/work">All projects <span class="arrow">↗</span></a>
+        <a class="link" href="/work">{h.allProjects} <span class="arrow">↗</span></a>
       </div>
 
       <div class="projects">
@@ -65,26 +66,16 @@ const featured = projects.slice(0, 3);
       </div>
     </section>
 
-    <AsciiDivider label="About" pattern="∙ " />
+    <AsciiDivider label={h.dividerAbout} pattern="∙ " />
 
     <section class="section shell">
       <div class="about-grid">
-        <p>
-          I'm a software developer focused on shipping <em>useful</em> SaaS and
-          high-craft websites — usually solo, sometimes with a small team.
-        </p>
+        <p><Fragment set:html={h.aboutLead} /></p>
         <div class="body">
+          <p>{h.aboutBody1}</p>
+          <p>{h.aboutBody2}</p>
           <p>
-            I write TypeScript end-to-end, prefer boring infrastructure, and care
-            about the parts of an interface most people don't notice. Loading
-            states, focus rings, the kerning on the 404 page.
-          </p>
-          <p>
-            Currently building a couple of products of my own and taking on a
-            small number of client builds per quarter.
-          </p>
-          <p>
-            <a class="link" href="/about">More about me <span class="arrow">↗</span></a>
+            <a class="link" href="/about">{h.moreAbout} <span class="arrow">↗</span></a>
           </p>
         </div>
       </div>
@@ -92,23 +83,20 @@ const featured = projects.slice(0, 3);
 
     <section class="contact shell" id="contact">
       <p class="contact__big">
-        Let's make<br />
-        <a href="mailto:armandcollier24@gmail.com">something good<span class="caret"></span></a>
+        {h.contactBig}<br />
+        <a href="mailto:armand@parser-lab.com">{h.contactBig2}<span class="caret"></span></a>
       </p>
       <div class="stack gap-2">
-        <span class="eyebrow">Contact</span>
-        <a class="link" href="mailto:armandcollier24@gmail.com">armandcollier24@gmail.com <span class="arrow">↗</span></a>
+        <span class="eyebrow">{h.contactLabel}</span>
+        <a class="link" href="mailto:armand@parser-lab.com">armand@parser-lab.com <span class="arrow">↗</span></a>
         <a class="link" href="https://github.com/armandParser">github.com/armandParser <span class="arrow">↗</span></a>
       </div>
       <div class="stack gap-2">
-        <span class="eyebrow">What I do</span>
-        <span>Custom SaaS — MVP to v1</span>
-        <span>Marketing &amp; portfolio sites</span>
-        <span>Type-safe APIs &amp; auth</span>
-        <span>Design systems for small teams</span>
+        <span class="eyebrow">{h.whatIDo}</span>
+        {h.services.map(s => <span><Fragment set:html={s} /></span>)}
       </div>
     </section>
   </main>
 
-  <Footer />
+  <Footer lang={lang} />
 </Layout>

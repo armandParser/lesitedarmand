@@ -1,0 +1,120 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ProjectRow from '../../components/ProjectRow.astro';
+import PreviewCard from '../../components/PreviewCard.astro';
+import { projects, byCategory } from '../../data/projects.ts';
+import { t } from '../../i18n/translations';
+
+const lang = 'fr';
+const tr = t(lang);
+const w = tr.work;
+
+const mobile = byCategory('mobile');
+const saas = byCategory('saas');
+const personal = byCategory('personal');
+const client = byCategory('client');
+---
+
+<Layout title="Projets — Armand Collier" description="Projets sélectionnés par Armand Collier." lang={lang}>
+  <Header lang={lang} />
+
+  <main>
+    <section class="hero shell" style="padding-block: clamp(3rem, 6vw, 5rem) 1.5rem;">
+      <span class="eyebrow">{w.eyebrow}</span>
+      <h1 class="display" style="margin-top: 1rem;">
+        {w.title}<span style="color: var(--accent);">.</span>
+      </h1>
+      <p class="hero__sub">{w.sub}</p>
+    </section>
+
+    <!-- SaaS -->
+    <div class="shell cat-heading"><h2>{w.catSaas}<span class="cat-count">{saas.length}</span></h2></div>
+    <section class="section shell" style="padding-top: 1rem;">
+      <div class="preview-grid">
+        {saas.map((p) => (
+          <PreviewCard
+            title={p.title}
+            description={p.descriptionFr}
+            meta={p.meta}
+            href={p.href}
+            image={p.image}
+            showFooter={true}
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- Projets personnels -->
+    <div class="shell cat-heading"><h2>{w.catPersonal}<span class="cat-count">{personal.length}</span></h2></div>
+    <section class="section shell" style="padding-top: 1rem;">
+      <div class="preview-grid">
+        {personal.map((p) => (
+          <PreviewCard
+            title={p.title}
+            description={p.descriptionFr}
+            meta={p.meta}
+            href={p.href}
+            image={p.image}
+            video={p.video}
+            github={p.github}
+            showFooter={true}
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- Sites clients -->
+    <div class="shell cat-heading"><h2>{w.catClient}<span class="cat-count">{client.length}</span></h2></div>
+    <section class="section shell" style="padding-top: 1rem;">
+      <div class="preview-grid">
+        {client.map((p) => (
+          <PreviewCard
+            title={p.title}
+            description={p.descriptionFr}
+            meta={p.meta}
+            href={p.href}
+            image={p.image}
+            video={p.video}
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- Apps mobiles -->
+    <div class="shell cat-heading"><h2>{w.catMobile}<span class="cat-count">{mobile.length}</span></h2></div>
+    <section class="section shell" style="padding-top: 1rem;">
+      <div class="preview-grid">
+        {mobile.map((p) => (
+          <PreviewCard
+            title={p.title}
+            description={p.descriptionFr}
+            meta={p.meta}
+            href={p.href}
+            image={p.image}
+            showFooter={true}
+          />
+        ))}
+      </div>
+    </section>
+
+    <section class="contact shell">
+      <p class="contact__big">
+        {w.contactBig}<br />
+        <a href="mailto:armand@parser-lab.com">{w.contactBig2}<span class="caret"></span></a>
+      </p>
+      <div class="stack gap-2">
+        <span class="eyebrow">{w.openFor}</span>
+        {w.services.map(s => <span>{s}</span>)}
+      </div>
+      <div class="stack gap-2">
+        <span class="eyebrow">{w.reachMe}</span>
+        <a class="link" href="mailto:armand@parser-lab.com">armand@parser-lab.com <span class="arrow">↗</span></a>
+        <a class="link" href="https://github.com/armandParser">github.com/armandParser <span class="arrow">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang={lang} />
+</Layout>

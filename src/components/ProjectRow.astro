@@ -5,18 +5,43 @@ interface Props {
   description: string;
   meta: string;
   href?: string;
+  github?: string;
 }
-const { index, title, description, meta, href } = Astro.props;
+const { index, title, description, meta, href, github } = Astro.props;
 const num = String(index + 1).padStart(2, '0');
-const Tag = href ? 'a' : 'div';
 ---
 
-<Tag class="project" href={href} target={href?.startsWith('http') ? '_blank' : undefined} rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}>
+<div class="project">
   <span class="project__num">{num}</span>
   <span class="project__title">{title}</span>
   <span class="project__desc">{description}</span>
   <span class="project__meta">
-    {meta}
-    {href && <span class="arrow" style="margin-left: 0.6ch;">↗</span>}
+    <!-- {meta} -->
+    <span class="project__links">
+      {href && (
+        <a href={href} target="_blank" rel="noopener noreferrer" class="project__link">
+          Demo <span class="arrow">↗</span>
+        </a>
+      )}
+      {github && (
+        <a href={github} target="_blank" rel="noopener noreferrer" class="project__link">
+          GitHub <span class="arrow">↗</span>
+        </a>
+      )}
+    </span>
   </span>
-</Tag>
+</div>
+
+<style>
+  .project__links {
+    display: inline-flex;
+    gap: 1rem;
+    margin-left: 1rem;
+  }
+  .project__link {
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .project__link:hover { text-decoration: underline; }
+</style>
