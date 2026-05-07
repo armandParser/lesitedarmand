@@ -676,7 +676,8 @@ const projects = [
         overlayEl.removeAttribute('aria-hidden');
         overlayActive = true;
         lockScroll();
-        requestAnimationFrame(playVisibleVideos);
+        // Double RAF ensures overlay is painted before play() is called
+        requestAnimationFrame(() => requestAnimationFrame(playVisibleVideos));
       }
 
       function hideOverlay(dismissed: boolean, targetY?: number) {
@@ -774,13 +775,46 @@ const projects = [
 
       /* ── touch: swipe list on mobile ── */
       let touchStartX = 0;
+      let touchStartY = 0;
+
       listEl.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        // User interaction unlocks autoplay on mobile
+        if (overlayActive) playVisibleVideos();
       }, { passive: true });
+
+      // Play videos as user scrolls horizontally through list
+      listEl.addEventListener('scroll', () => {
+        if (overlayActive) playVisibleVideos();
+      }, { passive: true });
+
       listEl.addEventListener('touchend', (e) => {
         if (!overlayActive) return;
         const dx = touchStartX - e.changedTouches[0].clientX;
+        const dy = touchStartY - e.changedTouches[0].clientY;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
         const maxScroll = listEl.scrollWidth - listEl.clientWidth;
+
+        // Vertical swipe: map to portfolio navigation so mobile users
+        // can use natural up/down gestures instead of horizontal-only
+        if (absY > absX && absY > 40) {
+          if (dy > 0) {
+            // Swiped up (= "scroll down") → advance list, or exit to contact
+            if (listEl.scrollLeft >= maxScroll - 30) {
+              hideOverlay(true);
+            } else {
+              listEl.scrollBy({ left: window.innerWidth * 0.75, behavior: 'smooth' });
+            }
+          } else {
+            // Swiped down (= "scroll up") → go back
+            hideOverlay(false, triggerScrollY! + Math.floor(EXPANSION_PX * 0.93));
+          }
+          return;
+        }
+
+        // Horizontal swipe (original desktop-trackpad parity)
         if (dx > 40 && listEl.scrollLeft >= maxScroll - 30) {
           hideOverlay(true);
         } else if (dx < -40 && listEl.scrollLeft <= 30) {
