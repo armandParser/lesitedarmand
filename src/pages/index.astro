@@ -773,23 +773,38 @@ const projects = [
         }
       }, { passive: false });
 
-      /* ── touch: swipe list on mobile ── */
+      /* ── touch: whole overlay swipeable on mobile ── */
       let touchStartX = 0;
       let touchStartY = 0;
+      let touchLastX  = 0;
 
-      listEl.addEventListener('touchstart', (e) => {
+      overlayEl.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
-        // User interaction unlocks autoplay on mobile
+        touchLastX  = e.touches[0].clientX;
         if (overlayActive) playVisibleVideos();
       }, { passive: true });
+
+      // Manual scroll for touches on the gradient area above the list;
+      // touches directly on listEl use native scroll (keeps momentum).
+      overlayEl.addEventListener('touchmove', (e) => {
+        if (!overlayActive) return;
+        if (listEl.contains(e.target as Node)) {
+          touchLastX = e.touches[0].clientX;
+          return;
+        }
+        e.preventDefault();
+        const currentX = e.touches[0].clientX;
+        listEl.scrollLeft += touchLastX - currentX;
+        touchLastX = currentX;
+      }, { passive: false });
 
       // Play videos as user scrolls horizontally through list
       listEl.addEventListener('scroll', () => {
         if (overlayActive) playVisibleVideos();
       }, { passive: true });
 
-      listEl.addEventListener('touchend', (e) => {
+      overlayEl.addEventListener('touchend', (e) => {
         if (!overlayActive) return;
         const dx = touchStartX - e.changedTouches[0].clientX;
         const dy = touchStartY - e.changedTouches[0].clientY;
@@ -797,11 +812,10 @@ const projects = [
         const absY = Math.abs(dy);
         const maxScroll = listEl.scrollWidth - listEl.clientWidth;
 
-        // Vertical swipe: map to portfolio navigation so mobile users
-        // can use natural up/down gestures instead of horizontal-only
+        // Vertical swipe: map to portfolio navigation
         if (absY > absX && absY > 40) {
           if (dy > 0) {
-            // Swiped up (= "scroll down") → advance list, or exit to contact
+            // Swiped up (= "scroll down") → advance list or exit to contact
             if (listEl.scrollLeft >= maxScroll - 30) {
               hideOverlay(true);
             } else {
@@ -814,7 +828,7 @@ const projects = [
           return;
         }
 
-        // Horizontal swipe (original desktop-trackpad parity)
+        // Horizontal swipe
         if (dx > 40 && listEl.scrollLeft >= maxScroll - 30) {
           hideOverlay(true);
         } else if (dx < -40 && listEl.scrollLeft <= 30) {
