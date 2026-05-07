@@ -638,7 +638,7 @@ const projects = [
     <ul class="m-proj__list">
       {projects.map((p) => (
         <li class="m-proj__item">
-          <video class="m-proj__video" src={p.video} muted loop playsinline disablePictureInPicture></video>
+          <video class="m-proj__video" src={p.video} poster={p.video.replace('.mp4', '-poster.jpg')} muted loop playsinline disablePictureInPicture></video>
           <span class="m-proj__meta">{p.meta}</span>
           <h3 class="m-proj__title">{p.title}</h3>
           <p class="m-proj__desc">{p.descriptionFr}</p>
@@ -670,7 +670,7 @@ const projects = [
     <ul class="proj-list" id="proj-list">
       {projects.map((p) => (
         <li class="proj-card">
-          <video class="proj-video" src={p.video} muted loop playsinline disablePictureInPicture></video>
+          <video class="proj-video" src={p.video} poster={p.video.replace('.mp4', '-poster.jpg')} muted loop playsinline disablePictureInPicture></video>
           <span class="proj-meta">{p.meta}</span>
           <h3 class="proj-title">{p.title}</h3>
           <p class="proj-desc">{p.descriptionFr}</p>
