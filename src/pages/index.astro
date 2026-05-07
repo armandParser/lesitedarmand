@@ -512,30 +512,106 @@ const projects = [
        RESPONSIVE
     ================================================================ */
 
+    /* Mobile vertical project list (hidden on desktop) */
+    .m-proj { display: none; }
+
     @media (max-width: 720px) {
-      /* Wider cards, tighter gap, recompute last-card centering padding */
-      .proj-card { width: 62vw; }
-      .proj-list {
-        gap: 1.25rem;
-        padding-right: calc(50vw - 31vw); /* last card (62vw) centers at 50vw */
-      }
+      /* Hide all desktop-only elements */
+      .s1-scroll-space, .proj-overlay, .s2, #contact-cta { display: none; }
 
-      /* s2 single-column */
-      .s2 { grid-template-columns: 1fr; }
-      .s2__tagline { padding-right: clamp(2rem, 4vw, 5rem); }
-      .s2__body {
-        grid-column: 1;
-        margin-top: 2.5rem;
-        padding-left: clamp(2rem, 4vw, 5rem);
-      }
-
-      /* Mobile hero: image always full-screen, text white */
+      /* Hero: fixed full-screen image, white text */
       .s1__lower { flex: 0; min-height: 0; }
       .s1__image-wrap { position: fixed; inset: 0; z-index: 0; }
-      .s1__title { color: #fff; position: relative; z-index: 1; }
+      .s1__image { animation: none; }
+      .s1__title { font-size: clamp(2.5rem, 16vw, 5rem); color: #fff; position: relative; z-index: 1; }
       .s1__desc { color: rgba(255, 255, 255, 0.8); position: relative; z-index: 1; }
-      /* Scroll-space only needs enough room to trigger the overlay */
-      .s1-scroll-space { height: 40dvh; background: transparent; }
+
+      /* Vertical project list */
+      .m-proj {
+        display: block;
+        position: relative;
+        background: transparent;
+        z-index: 1;
+      }
+
+      .m-proj__list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .m-proj__item {
+        padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1.5rem, 5vw, 2.5rem) 0;
+      }
+
+      .m-proj__video {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        display: block;
+        border-radius: 2px;
+        margin-bottom: 0.75rem;
+      }
+
+      .m-proj__meta {
+        display: block;
+        font-size: 0.6rem;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.45);
+        margin-bottom: 0.3rem;
+      }
+
+      .m-proj__title {
+        font-size: clamp(1.4rem, 6vw, 2rem);
+        font-weight: 400;
+        letter-spacing: -0.025em;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 0.4rem;
+      }
+
+      .m-proj__desc {
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.6);
+        line-height: 1.55;
+        margin-bottom: 0.5rem;
+      }
+
+      .m-proj__links {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .m-proj__link {
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.45);
+        text-decoration: none;
+      }
+
+      /* Fade-out + contact */
+      .m-proj__fade {
+        height: 6rem;
+        pointer-events: none;
+      }
+
+      .m-proj__contact {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 4rem 1.5rem 6rem;
+        text-align: center;
+      }
+
+      .m-proj__contact-link {
+        font-size: clamp(0.85rem, 4vw, 1.1rem);
+        color: rgba(255, 255, 255, 0.85);
+        text-decoration: none;
+        letter-spacing: -0.01em;
+      }
     }
   </style>
 </head>
@@ -556,6 +632,35 @@ const projects = [
       </div>
     </div>
   </section>
+
+  <!-- ─── MOBILE PROJECTS (vertical list, hidden on desktop) ─── -->
+  <div class="m-proj">
+    <ul class="m-proj__list">
+      {projects.map((p) => (
+        <li class="m-proj__item">
+          <video class="m-proj__video" src={p.video} muted loop playsinline disablePictureInPicture></video>
+          <span class="m-proj__meta">{p.meta}</span>
+          <h3 class="m-proj__title">{p.title}</h3>
+          <p class="m-proj__desc">{p.descriptionFr}</p>
+          {'href' in p || 'github' in p ? (
+            <div class="m-proj__links">
+              {'href' in p && p.href && (
+                <a href={p.href} target="_blank" rel="noopener noreferrer" class="m-proj__link">↗ Live</a>
+              )}
+              {'github' in p && p.github && (
+                <a href={p.github} target="_blank" rel="noopener noreferrer" class="m-proj__link">GitHub</a>
+              )}
+            </div>
+          ) : null}
+        </li>
+      ))}
+    </ul>
+    <div class="m-proj__fade" aria-hidden="true"></div>
+    <div class="m-proj__contact">
+      <a href="mailto:armandcollier24@gmail.com" class="m-proj__contact-link">armandcollier24@gmail.com</a>
+      <a href="https://github.com/armandParser" target="_blank" rel="noopener noreferrer" class="m-proj__contact-link">github.com/armandParser</a>
+    </div>
+  </div>
 
   <!-- scroll space: image fully expands here before s2 enters -->
   <div class="s1-scroll-space" aria-hidden="true"></div>
@@ -607,6 +712,21 @@ const projects = [
 
   <script>
     (function () {
+      // ── Mobile: simple vertical list, only need video autoplay ──
+      if (window.innerWidth <= 720) {
+        const mobileVideos = Array.from(document.querySelectorAll<HTMLVideoElement>('.m-proj__video'));
+        const obs = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            const v = e.target as HTMLVideoElement;
+            if (e.isIntersecting) v.play().catch(() => {});
+            else v.pause();
+          });
+        }, { threshold: 0.3 });
+        mobileVideos.forEach((v) => obs.observe(v));
+        return;
+      }
+
+      // ── Desktop only from here ──
       const imageWrap    = document.querySelector('.s1__image-wrap') as HTMLElement;
       const lower        = document.querySelector('.s1__lower')      as HTMLElement;
       const scrollSpaceEl = document.querySelector('.s1-scroll-space') as HTMLElement;
@@ -615,7 +735,7 @@ const projects = [
       const contactCta   = document.getElementById('contact-cta')    as HTMLElement;
       if (!imageWrap || !lower || !overlayEl || !listEl) return;
 
-      const isMobile = () => window.innerWidth <= 720;
+      const isMobile = () => false; // desktop-only branch, always false
 
       function showContact() {
         document.body.classList.add('contact-active');
@@ -638,7 +758,7 @@ const projects = [
       let overlayActive    = false;
       let overlayDismissed = false;
       let savedScrollY     = 0;
-      let overlayScrollY   = 0; // mobile: scroll position when overlay triggered
+      let overlayScrollY   = 0;
 
       /* ── scroll lock ── */
       function lockScroll() {
@@ -683,13 +803,11 @@ const projects = [
 
       /* ── overlay ── */
       function showOverlay() {
-        if (isMobile()) overlayScrollY = window.scrollY;
         listEl.scrollLeft = 0;
         overlayEl.classList.add('is-active');
         overlayEl.removeAttribute('aria-hidden');
         overlayActive = true;
         lockScroll();
-        // Double RAF ensures overlay is painted before play() is called
         requestAnimationFrame(() => requestAnimationFrame(playVisibleVideos));
       }
 
@@ -709,28 +827,9 @@ const projects = [
         });
       }
 
-      /* ── main scroll handler ── */
+      /* ── main scroll handler (desktop only) ── */
       function update() {
         if (overlayActive) return;
-
-        if (isMobile()) {
-          // Mobile: image always fixed full-screen via CSS.
-          // Trigger overlay as soon as scroll-space top crosses the viewport top.
-          if (!scrollSpaceEl) return;
-          const spaceTop = scrollSpaceEl.getBoundingClientRect().top;
-          const entered = spaceTop <= 0;
-
-          if (!entered && overlayDismissed) { overlayDismissed = false; hideContact(); }
-
-          if (entered && !overlayActive && !overlayDismissed) {
-            showOverlay();
-          } else if (!entered && overlayActive) {
-            hideOverlay(false);
-          }
-          return;
-        }
-
-        // Desktop: scroll-driven image expansion
         const vh = window.innerHeight;
         const vw = window.innerWidth;
 
@@ -864,11 +963,9 @@ const projects = [
         if (overlayActive) hideOverlay(false);
         overlayDismissed = false;
         hideContact();
-        if (!isMobile()) {
-          triggerScrollY = null;
-          naturalTop = naturalLeft = naturalRight = null;
-          resetImage();
-        }
+        triggerScrollY = null;
+        naturalTop = naturalLeft = naturalRight = null;
+        resetImage();
       }, { passive: true });
     })();
   </script>
