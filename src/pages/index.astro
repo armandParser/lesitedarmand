@@ -528,6 +528,18 @@ const projects = [
         margin-top: 2.5rem;
         padding-left: clamp(2rem, 4vw, 5rem);
       }
+
+      /* Mobile hero: image always full-screen, text white */
+      .s1 { position: relative; z-index: 1; }
+      .s1__lower { flex: 0; min-height: 0; }
+      .s1__image-wrap {
+        position: fixed;
+        inset: 0;
+        top: 0; left: 0; right: 0; bottom: 0;
+      }
+      .s1__title { color: #fff; }
+      .s1__desc { color: rgba(255, 255, 255, 0.8); }
+      .s1-scroll-space { background: transparent; }
     }
   </style>
 </head>
@@ -599,12 +611,15 @@ const projects = [
 
   <script>
     (function () {
-      const imageWrap  = document.querySelector('.s1__image-wrap') as HTMLElement;
-      const lower      = document.querySelector('.s1__lower')      as HTMLElement;
-      const overlayEl  = document.getElementById('proj-overlay')   as HTMLElement;
-      const listEl     = document.getElementById('proj-list')      as HTMLElement;
-      const contactCta = document.getElementById('contact-cta')    as HTMLElement;
+      const imageWrap    = document.querySelector('.s1__image-wrap') as HTMLElement;
+      const lower        = document.querySelector('.s1__lower')      as HTMLElement;
+      const scrollSpaceEl = document.querySelector('.s1-scroll-space') as HTMLElement;
+      const overlayEl    = document.getElementById('proj-overlay')   as HTMLElement;
+      const listEl       = document.getElementById('proj-list')      as HTMLElement;
+      const contactCta   = document.getElementById('contact-cta')    as HTMLElement;
       if (!imageWrap || !lower || !overlayEl || !listEl) return;
+
+      const isMobile = () => window.innerWidth <= 720;
 
       function showContact() {
         document.body.classList.add('contact-active');
@@ -624,9 +639,10 @@ const projects = [
       let naturalRight:   number | null = null;
 
       // Overlay / scroll-lock state
-      let overlayActive   = false;
+      let overlayActive    = false;
       let overlayDismissed = false;
-      let savedScrollY    = 0;
+      let savedScrollY     = 0;
+      let overlayScrollY   = 0; // mobile: scroll position when overlay triggered
 
       /* ── scroll lock ── */
       function lockScroll() {
@@ -671,6 +687,7 @@ const projects = [
 
       /* ── overlay ── */
       function showOverlay() {
+        if (isMobile()) overlayScrollY = window.scrollY;
         listEl.scrollLeft = 0;
         overlayEl.classList.add('is-active');
         overlayEl.removeAttribute('aria-hidden');
@@ -698,16 +715,32 @@ const projects = [
 
       /* ── main scroll handler ── */
       function update() {
-        if (overlayActive) return; // scroll locked, wheel/touch handler takes over
+        if (overlayActive) return;
 
+        if (isMobile()) {
+          // Mobile: image is always fixed full-screen via CSS.
+          // Trigger overlay when scroll-space bottom leaves the viewport.
+          if (!scrollSpaceEl) return;
+          const spaceRect = scrollSpaceEl.getBoundingClientRect();
+          const progress = Math.min(1, Math.max(0, 1 - spaceRect.bottom / window.innerHeight));
+
+          if (progress < 0.98 && overlayDismissed) { overlayDismissed = false; hideContact(); }
+
+          if (progress >= 0.99 && !overlayActive && !overlayDismissed) {
+            showOverlay();
+          } else if (progress < 0.99 && overlayActive) {
+            hideOverlay(false);
+          }
+          return;
+        }
+
+        // Desktop: scroll-driven image expansion
         const vh = window.innerHeight;
         const vw = window.innerWidth;
 
         if (triggerScrollY === null) {
           const rect   = imageWrap.getBoundingClientRect();
           const center = (rect.top + rect.bottom) / 2;
-          // Only capture when image is scrolling into view from below — not when
-          // already scrolled past (rect.bottom <= 0) or not yet at midpoint.
           if (rect.bottom <= 0 || center > vh / 2) return;
           triggerScrollY = window.scrollY;
           naturalTop   = rect.top;
@@ -718,7 +751,6 @@ const projects = [
         const extraScroll = window.scrollY - triggerScrollY!;
 
         if (extraScroll < 0) {
-          if (overlayActive) hideOverlay(false);
           triggerScrollY = null;
           naturalTop = naturalLeft = naturalRight = null;
           overlayDismissed = false;
@@ -729,10 +761,8 @@ const projects = [
 
         const progress = Math.min(1, extraScroll / EXPANSION_PX);
 
-        // Reset dismissed flag as soon as image starts shrinking again
         if (progress < 0.98 && overlayDismissed) { overlayDismissed = false; hideContact(); }
 
-        // Snap to full-screen at 99% to avoid subpixel gaps from scroll event granularity
         const t = progress >= 0.99 ? 0 : (1 - progress);
 
         Object.assign(imageWrap.style, {
@@ -764,9 +794,6 @@ const projects = [
           // Last card centered + scroll forward → proceed to section 2
           hideOverlay(true);
         } else if (delta < 0 && listEl.scrollLeft <= 5) {
-          // At list start + scroll up → release back into expansion zone.
-          // Anchor to triggerScrollY (not savedScrollY) so overshoot can't push
-          // target back above the 0.99 threshold and re-trigger immediately.
           hideOverlay(false, triggerScrollY! + Math.floor(EXPANSION_PX * 0.93));
         } else {
           listEl.scrollLeft += delta;
@@ -823,7 +850,7 @@ const projects = [
             }
           } else {
             // Swiped down (= "scroll up") → go back
-            hideOverlay(false, triggerScrollY! + Math.floor(EXPANSION_PX * 0.93));
+            hideOverlay(false, overlayScrollY - Math.floor(window.innerHeight * 0.08));
           }
           return;
         }
@@ -832,18 +859,20 @@ const projects = [
         if (dx > 40 && listEl.scrollLeft >= maxScroll - 30) {
           hideOverlay(true);
         } else if (dx < -40 && listEl.scrollLeft <= 30) {
-          hideOverlay(false, triggerScrollY! + Math.floor(EXPANSION_PX * 0.93));
+          hideOverlay(false, overlayScrollY - Math.floor(window.innerHeight * 0.08));
         }
       }, { passive: true });
 
       window.addEventListener('scroll', update, { passive: true });
       window.addEventListener('resize', () => {
         if (overlayActive) hideOverlay(false);
-        triggerScrollY = null;
-        naturalTop = naturalLeft = naturalRight = null;
         overlayDismissed = false;
         hideContact();
-        resetImage();
+        if (!isMobile()) {
+          triggerScrollY = null;
+          naturalTop = naturalLeft = naturalRight = null;
+          resetImage();
+        }
       }, { passive: true });
     })();
   </script>
