@@ -1,5 +1,6 @@
 ---
 // src/pages/card.astro
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const cols = 15;
 const rows = 7;
 const dotSizes: string[] = [];
@@ -17,7 +18,7 @@ const projects = [
     meta: 'Web · Open source',
     href: 'https://tendersansfrites.netlify.app',
     github: 'https://github.com/armandParser/tenders',
-    video: '/previews/tenders.mp4',
+    video: `${base}previews/tenders.mp4`,
   },
   {
     title: 'tldfetch',
@@ -25,7 +26,7 @@ const projects = [
     meta: 'Web · DevTools',
     href: 'https://tldfetch.netlify.app',
     github: 'https://github.com/armandParser/tldfetch',
-    video: '/previews/tldfetch.mp4',
+    video: `${base}previews/tldfetch.mp4`,
   },
   {
     title: 'drams-react',
@@ -33,14 +34,14 @@ const projects = [
     meta: 'Library · React',
     href: 'https://drams-react.netlify.app',
     github: 'https://github.com/armandParser/drams-react',
-    video: '/previews/drams-react.mp4',
+    video: `${base}previews/drams-react.mp4`,
   },
   {
     title: 'Kimi Antonelli',
     descriptionFr: "Site personnel du pilote F1 Kimi Antonelli.",
     meta: 'Site · Personnel',
     href: 'https://kimiantonelli.netlify.app',
-    video: '/previews/kimi-antonelli.mp4',
+    video: `${base}previews/kimi-antonelli.mp4`,
   },
   {
     title: 'Maggie Editor',
@@ -48,41 +49,41 @@ const projects = [
     meta: 'Web · DevTools',
     href: 'https://maggie-editor.netlify.app/',
     github: 'https://github.com/armandParser/maggie',
-    video: '/previews/maggie.mp4',
+    video: `${base}previews/maggie.mp4`,
   },
   {
     title: 'Parser Lab',
     descriptionFr: 'Site de studio logiciel.',
     meta: 'Site · Studio',
     href: 'https://parser-lab.com',
-    video: '/previews/parser-lab.mp4',
+    video: `${base}previews/parser-lab.mp4`,
   },
   {
     title: 'Oyo Escapes',
     descriptionFr: "Site d'expériences de voyage.",
     meta: 'Site · Travel',
-    video: '/previews/oyo-escapes.mp4',
+    video: `${base}previews/oyo-escapes.mp4`,
   },
   {
     title: 'La Gragna Guette',
     descriptionFr: 'Restaurant toulousain.',
     meta: 'Site · Restaurant',
     href: 'https://lagragnaguette.com',
-    video: '/previews/la-gragna-guette.mp4',
+    video: `${base}previews/la-gragna-guette.mp4`,
   },
   {
     title: 'Liftov Bordeaux',
     descriptionFr: 'Bar bordelais.',
     meta: 'Site · Fitness',
     href: 'https://liftovbordeaux.fr',
-    video: '/previews/liftov-bordeaux.mp4',
+    video: `${base}previews/liftov-bordeaux.mp4`,
   },
   {
     title: 'Bauer Débarras',
     descriptionFr: "Site de débarras et enlèvement de déchets.",
     meta: 'Site · Services',
     href: 'https://bauer-debarras.netlify.app',
-    video: '/previews/bauer-debarras.mp4',
+    video: `${base}previews/bauer-debarras.mp4`,
   },
 ] as const;
 ---
@@ -92,23 +93,25 @@ const projects = [
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
   <title>Armand Collier — Développeur web</title>
-  <style is:global>
+  <style set:html={`
     @font-face {
       font-family: 'NeueMontreal';
-      src: url('/fonts/NeueMontreal-Regular.otf') format('opentype');
+      src: url('${base}fonts/NeueMontreal-Regular.otf') format('opentype');
       font-weight: 400;
       font-style: normal;
       font-display: swap;
     }
     @font-face {
       font-family: 'NeueMontreal';
-      src: url('/fonts/NeueMontreal-Bold.otf') format('opentype');
+      src: url('${base}fonts/NeueMontreal-Bold.otf') format('opentype');
       font-weight: 700;
       font-style: normal;
       font-display: swap;
     }
+  `}></style>
+  <style is:global>
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
@@ -215,6 +218,16 @@ const projects = [
       margin-bottom: clamp(1rem, 2vh, 2rem);
       flex-shrink: 0;
       animation: s1-desc-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.9s both;
+    }
+
+    @media (min-width: 721px) {
+      .s1__desc {
+        align-self: flex-end;
+        text-align: right;
+        font-size: clamp(2rem, 4vw, 5rem);
+        max-width: 20ch;
+        line-height: 1.2;
+      }
     }
 
     .s1-scroll-space {
@@ -530,7 +543,7 @@ const projects = [
     <div class="s1__lower">
       <div class="s1__image-wrap">
         <div class="s1__image">
-          <img src="/previews/ascii-art.png" alt="" aria-hidden="true" />
+          <img src={`${base}previews/ascii-art.png`} alt="" aria-hidden="true" />
         </div>
       </div>
     </div>
