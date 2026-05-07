@@ -530,16 +530,12 @@ const projects = [
       }
 
       /* Mobile hero: image always full-screen, text white */
-      .s1 { position: relative; z-index: 1; }
       .s1__lower { flex: 0; min-height: 0; }
-      .s1__image-wrap {
-        position: fixed;
-        inset: 0;
-        top: 0; left: 0; right: 0; bottom: 0;
-      }
-      .s1__title { color: #fff; }
-      .s1__desc { color: rgba(255, 255, 255, 0.8); }
-      .s1-scroll-space { background: transparent; }
+      .s1__image-wrap { position: fixed; inset: 0; z-index: 0; }
+      .s1__title { color: #fff; position: relative; z-index: 1; }
+      .s1__desc { color: rgba(255, 255, 255, 0.8); position: relative; z-index: 1; }
+      /* Scroll-space only needs enough room to trigger the overlay */
+      .s1-scroll-space { height: 40dvh; background: transparent; }
     }
   </style>
 </head>
@@ -718,17 +714,17 @@ const projects = [
         if (overlayActive) return;
 
         if (isMobile()) {
-          // Mobile: image is always fixed full-screen via CSS.
-          // Trigger overlay when scroll-space bottom leaves the viewport.
+          // Mobile: image always fixed full-screen via CSS.
+          // Trigger overlay as soon as scroll-space top crosses the viewport top.
           if (!scrollSpaceEl) return;
-          const spaceRect = scrollSpaceEl.getBoundingClientRect();
-          const progress = Math.min(1, Math.max(0, 1 - spaceRect.bottom / window.innerHeight));
+          const spaceTop = scrollSpaceEl.getBoundingClientRect().top;
+          const entered = spaceTop <= 0;
 
-          if (progress < 0.98 && overlayDismissed) { overlayDismissed = false; hideContact(); }
+          if (!entered && overlayDismissed) { overlayDismissed = false; hideContact(); }
 
-          if (progress >= 0.99 && !overlayActive && !overlayDismissed) {
+          if (entered && !overlayActive && !overlayDismissed) {
             showOverlay();
-          } else if (progress < 0.99 && overlayActive) {
+          } else if (!entered && overlayActive) {
             hideOverlay(false);
           }
           return;
