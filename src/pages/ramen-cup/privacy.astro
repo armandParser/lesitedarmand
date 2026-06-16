@@ -1,0 +1,163 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const updated = 'June 16, 2026';
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <title>Ramen Cup — Privacy Policy</title>
+  <style set:html={`
+    @font-face {
+      font-family: 'NeueMontreal';
+      src: url('${base}fonts/NeueMontreal-Regular.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+  `}></style>
+  <style is:global>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    body {
+      font-family: 'NeueMontreal', Helvetica, Arial, system-ui, sans-serif;
+      background: #fff;
+      color: #111;
+      overflow-x: hidden;
+    }
+
+    .nav {
+      padding: clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 4vw, 4rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .nav__back {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: #999;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav__back:hover { color: #111; }
+    .nav__label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: #999;
+    }
+
+    .page-header {
+      padding: 0 clamp(2rem, 4vw, 4rem) clamp(4rem, 8vh, 7rem);
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .page-header__title {
+      font-size: clamp(3rem, 8vw, 9rem);
+      font-weight: 400;
+      line-height: 0.9;
+      letter-spacing: -0.035em;
+      color: #000;
+      margin-bottom: clamp(1.5rem, 3vh, 2.5rem);
+    }
+    .page-header__sub {
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      color: #888;
+      line-height: 1.6;
+    }
+
+    .content {
+      padding: clamp(3rem, 6vh, 6rem) clamp(2rem, 4vw, 4rem);
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(2rem, 4vh, 3rem);
+    }
+
+    .section__label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #bbb;
+      margin-bottom: 0.75rem;
+    }
+    .section__body {
+      font-size: 0.88rem;
+      color: #555;
+      line-height: 1.8;
+    }
+    .section__body strong {
+      color: #111;
+      font-weight: 400;
+    }
+
+    .footer {
+      padding: clamp(2rem, 4vh, 3.5rem) clamp(2rem, 4vw, 4rem);
+      border-top: 1px solid #e8e8e8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .footer__copy { font-size: 0.72rem; color: #bbb; letter-spacing: -0.01em; }
+    .footer__contact {
+      font-size: 0.72rem;
+      color: #999;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      transition: color 0.15s;
+    }
+    .footer__contact:hover { color: #111; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href={`${base}ramen-cup`} class="nav__back">← Ramen Cup</a>
+    <span class="nav__label">Privacy Policy</span>
+  </nav>
+
+  <header class="page-header">
+    <h1 class="page-header__title">Privacy</h1>
+    <p class="page-header__sub">Last updated {updated}</p>
+  </header>
+
+  <main class="content">
+    <div>
+      <p class="section__label">The short version</p>
+      <p class="section__body"><strong>Ramen Cup collects no data about you, period.</strong> No account, no tracking, no analytics, no ads.</p>
+    </div>
+
+    <div>
+      <p class="section__label">What we collect</p>
+      <p class="section__body">Nothing. The app fetches publicly available match data directly from ESPN's API to display scores, standings, and bracket information. That request goes from your device to ESPN — Ramen Cup has no server that receives or stores anything about you.</p>
+    </div>
+
+    <div>
+      <p class="section__label">Push notifications</p>
+      <p class="section__body">If you enable push notifications, your device token is used solely to deliver notifications to your device. It is never shared with third parties and is not linked to any personal information.</p>
+    </div>
+
+    <div>
+      <p class="section__label">Third-party services</p>
+      <p class="section__body">Match data is sourced from ESPN's public API. No advertising SDKs, analytics tools, or tracking libraries are included in the app.</p>
+    </div>
+
+    <div>
+      <p class="section__label">Contact</p>
+      <p class="section__body">Questions? Reach out at <a href="mailto:armandcollier24@gmail.com" style="color:#111;">armandcollier24@gmail.com</a>.</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span class="footer__copy">© 2026 Armand Collier</span>
+    <a href="mailto:armandcollier24@gmail.com" class="footer__contact">Contact</a>
+  </footer>
+
+</body>
+</html>
