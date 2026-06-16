@@ -1,0 +1,239 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+
+const faqs = [
+  {
+    q: 'Notifications aren\'t arriving.',
+    a: 'Open Settings → Notifications → Ramen Cup and make sure notifications are allowed. If they\'re enabled but still not arriving, try toggling them off and back on.',
+  },
+  {
+    q: 'Scores aren\'t updating.',
+    a: 'Pull down to refresh on the Matches screen. If the issue persists, close and reopen the app — scores refresh automatically every 60 seconds while the app is open.',
+  },
+  {
+    q: 'The bracket isn\'t showing all teams.',
+    a: 'The bracket populates as the group stage completes. Teams will appear in each slot once they\'ve qualified.',
+  },
+  {
+    q: 'How do I change the background?',
+    a: 'Tap the settings icon in the top-right corner of the home screen to cycle through available backgrounds.',
+  },
+] as const;
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <title>Ramen Cup — Support</title>
+  <style set:html={`
+    @font-face {
+      font-family: 'NeueMontreal';
+      src: url('${base}fonts/NeueMontreal-Regular.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'NeueMontreal';
+      src: url('${base}fonts/NeueMontreal-Bold.otf') format('opentype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+  `}></style>
+  <style is:global>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    body {
+      font-family: 'NeueMontreal', Helvetica, Arial, system-ui, sans-serif;
+      background: #fff;
+      color: #111;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      padding: clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 4vw, 4rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .nav__back {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: #999;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav__back:hover { color: #111; }
+    .nav__label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: #999;
+    }
+
+    /* ── HEADER ── */
+    .page-header {
+      padding: 0 clamp(2rem, 4vw, 4rem) clamp(4rem, 8vh, 7rem);
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .page-header__title {
+      font-size: clamp(3rem, 8vw, 9rem);
+      font-weight: 400;
+      line-height: 0.9;
+      letter-spacing: -0.035em;
+      color: #000;
+      margin-bottom: clamp(1.5rem, 3vh, 2.5rem);
+    }
+    .page-header__sub {
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      color: #888;
+      line-height: 1.6;
+    }
+
+    /* ── FAQ ── */
+    .faq {
+      padding: clamp(3rem, 6vh, 6rem) clamp(2rem, 4vw, 4rem);
+      max-width: 800px;
+    }
+    .faq__label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #bbb;
+      margin-bottom: clamp(2rem, 4vh, 3rem);
+    }
+    .faq__list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+    }
+    .faq__item {
+      padding: clamp(1.5rem, 3vh, 2rem) 0;
+      border-top: 1px solid #e8e8e8;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .faq__item:last-child {
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .faq__q {
+      font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      color: #111;
+    }
+    .faq__a {
+      font-size: 0.82rem;
+      color: #777;
+      line-height: 1.7;
+      max-width: 56ch;
+    }
+
+    /* ── CONTACT ── */
+    .contact {
+      padding: clamp(3rem, 6vh, 6rem) clamp(2rem, 4vw, 4rem);
+      border-top: 1px solid #e8e8e8;
+    }
+    .contact__label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #bbb;
+      margin-bottom: clamp(1rem, 2vh, 1.5rem);
+    }
+    .contact__heading {
+      font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      margin-bottom: clamp(0.75rem, 1.5vh, 1.25rem);
+      color: #111;
+    }
+    .contact__body {
+      font-size: 0.82rem;
+      color: #888;
+      line-height: 1.7;
+      margin-bottom: clamp(1.5rem, 3vh, 2rem);
+      max-width: 42ch;
+    }
+    .contact__link {
+      font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+      color: #111;
+      text-decoration: none;
+      border-bottom: 1px solid #e8e8e8;
+      padding-bottom: 0.2rem;
+      transition: border-color 0.15s;
+      letter-spacing: -0.01em;
+    }
+    .contact__link:hover { border-color: #111; }
+
+    /* ── FOOTER ── */
+    .footer {
+      padding: clamp(2rem, 4vh, 3.5rem) clamp(2rem, 4vw, 4rem);
+      border-top: 1px solid #e8e8e8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .footer__copy {
+      font-size: 0.72rem;
+      color: #bbb;
+      letter-spacing: -0.01em;
+    }
+    .footer__app {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #999;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer__app:hover { color: #111; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href={`${base}ramen-cup`} class="nav__back">← Ramen Cup</a>
+    <span class="nav__label">Support</span>
+  </nav>
+
+  <header class="page-header">
+    <h1 class="page-header__title">Support</h1>
+    <p class="page-header__sub">Ramen Cup · iOS · Version 1.0</p>
+  </header>
+
+  <section class="faq">
+    <p class="faq__label">Common questions</p>
+    <ul class="faq__list">
+      {faqs.map((item) => (
+        <li class="faq__item">
+          <span class="faq__q">{item.q}</span>
+          <span class="faq__a">{item.a}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="contact">
+    <p class="contact__label">Contact</p>
+    <h2 class="contact__heading">Still need help?</h2>
+    <p class="contact__body">Send an email and I'll get back to you as soon as possible.</p>
+    <a href="mailto:armandcollier24@gmail.com" class="contact__link">armandcollier24@gmail.com</a>
+  </section>
+
+  <footer class="footer">
+    <span class="footer__copy">© 2026 Armand Collier</span>
+    <a href={`${base}ramen-cup`} class="footer__app">Ramen Cup ↗</a>
+  </footer>
+
+</body>
+</html>

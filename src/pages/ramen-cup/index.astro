@@ -1,0 +1,251 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+
+const features = [
+  { label: 'Live scores', desc: 'Results updated in real time throughout every match.' },
+  { label: 'Group standings', desc: 'Full group stage table with goal difference and form.' },
+  { label: 'Bracket view', desc: 'Round of 16 through the final, at a glance.' },
+  { label: 'Push notifications', desc: 'Get alerted when your teams kick off or score.' },
+  { label: 'Custom backgrounds', desc: '15 backgrounds to make the app yours.' },
+] as const;
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <title>Ramen Cup — 2026 FIFA World Cup</title>
+  <meta name="description" content="Follow every match of the 2026 FIFA World Cup. Live scores, groups, bracket, and push notifications." />
+  <style set:html={`
+    @font-face {
+      font-family: 'NeueMontreal';
+      src: url('${base}fonts/NeueMontreal-Regular.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'NeueMontreal';
+      src: url('${base}fonts/NeueMontreal-Bold.otf') format('opentype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+  `}></style>
+  <style is:global>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    body {
+      font-family: 'NeueMontreal', Helvetica, Arial, system-ui, sans-serif;
+      background: #fff;
+      color: #111;
+      overflow-x: hidden;
+    }
+
+    @keyframes slide-up {
+      from { transform: translateY(110%); }
+      to   { transform: translateY(0); }
+    }
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(0.5rem); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero__line-body, .hero__sub, .hero__badge, .features { animation: none !important; }
+    }
+
+    /* ── NAV ── */
+    .nav {
+      padding: clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 4vw, 4rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .nav__home {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: #999;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav__home:hover { color: #111; }
+    .nav__label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: #999;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 0 clamp(2rem, 4vw, 4rem) clamp(4rem, 8vh, 8rem);
+    }
+    .hero__title {
+      font-size: clamp(5rem, 13vw, 15rem);
+      font-weight: 400;
+      line-height: 0.87;
+      letter-spacing: -0.035em;
+      color: #000;
+      margin-bottom: clamp(2rem, 4vh, 4rem);
+    }
+    .hero__line-clip {
+      display: block;
+      overflow: hidden;
+      padding-bottom: 0.06em;
+    }
+    .hero__line-body {
+      display: block;
+      animation: slide-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .hero__line-body--2 { animation-delay: 0.08s; }
+
+    .hero__lower {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(1.5rem, 3vh, 2.5rem);
+      animation: fade-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+    }
+
+    .hero__sub {
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      color: #555;
+      line-height: 1.5;
+      max-width: 36ch;
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #111;
+      color: #fff;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.85rem;
+      letter-spacing: -0.01em;
+      transition: background 0.15s;
+      border-radius: 2px;
+      width: fit-content;
+    }
+    .hero__badge:hover { background: #333; }
+    .hero__badge svg { flex-shrink: 0; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 0 clamp(2rem, 4vw, 4rem);
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: clamp(4rem, 8vh, 8rem) clamp(2rem, 4vw, 4rem);
+      animation: fade-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1s both;
+    }
+    .features__label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #bbb;
+      margin-bottom: clamp(2rem, 4vh, 3.5rem);
+    }
+    .features__list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0;
+    }
+    .features__item {
+      padding: clamp(1.5rem, 3vh, 2.5rem) 0;
+      border-top: 1px solid #e8e8e8;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding-right: 2rem;
+    }
+    .features__name {
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #111;
+    }
+    .features__desc {
+      font-size: 0.78rem;
+      color: #888;
+      line-height: 1.6;
+      max-width: 28ch;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      padding: clamp(3rem, 6vh, 5rem) clamp(2rem, 4vw, 4rem);
+      border-top: 1px solid #e8e8e8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .footer__copy {
+      font-size: 0.72rem;
+      color: #bbb;
+      letter-spacing: -0.01em;
+    }
+    .footer__support {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #999;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer__support:hover { color: #111; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href={`${base}`} class="nav__home">← Armand Collier</a>
+    <span class="nav__label">iOS · App Store</span>
+  </nav>
+
+  <header class="hero">
+    <h1 class="hero__title">
+      <span class="hero__line-clip"><span class="hero__line-body">Ramen</span></span>
+      <span class="hero__line-clip"><span class="hero__line-body hero__line-body--2">Cup</span></span>
+    </h1>
+    <div class="hero__lower">
+      <p class="hero__sub">Follow every match of the 2026 FIFA World Cup — live scores, groups, bracket, and push notifications.</p>
+      <a href="#" class="hero__badge" aria-label="Download on the App Store">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="currentColor"/>
+        </svg>
+        Download on the App Store
+      </a>
+    </div>
+  </header>
+
+  <div class="divider" aria-hidden="true"></div>
+
+  <section class="features">
+    <p class="features__label">Features</p>
+    <ul class="features__list">
+      {features.map((f) => (
+        <li class="features__item">
+          <span class="features__name">{f.label}</span>
+          <span class="features__desc">{f.desc}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <footer class="footer">
+    <span class="footer__copy">© 2026 Armand Collier</span>
+    <a href={`${base}ramen-cup/support`} class="footer__support">Support →</a>
+  </footer>
+
+</body>
+</html>
