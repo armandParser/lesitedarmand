@@ -8,6 +8,11 @@ export const ui = {
     cardTagline: 'Projets personnels ou professionnels réalisés au cours des 12 derniers mois.',
     contact: 'Contact',
     langSwitch: 'EN',
+    mobileTitle: 'Applications mobile',
+    mobileHint: 'Touchez un écran pour agrandir',
+    lbClose: 'Fermer',
+    lbPrev: 'Écran précédent',
+    lbNext: 'Écran suivant',
   },
   en: {
     pageTitle: 'Armand Collier — Web Developer',
@@ -16,6 +21,11 @@ export const ui = {
     cardTagline: 'Personal and professional projects from the last 12 months.',
     contact: 'Contact',
     langSwitch: 'FR',
+    mobileTitle: 'Mobile Apps',
+    mobileHint: 'Tap a screen to zoom',
+    lbClose: 'Close',
+    lbPrev: 'Previous screen',
+    lbNext: 'Next screen',
   },
 } as const;
 
@@ -112,3 +122,90 @@ export const indexProjects: ProjectEntry[] = [
 ];
 
 export const cardProjects: ProjectEntry[] = indexProjects.filter(p => p.title !== 'Hidden Games');
+
+export interface AppScreen {
+  src: string;
+  alt: string;
+}
+
+export interface AppEntry {
+  name: string;
+  slug: string;
+  needsBorders: boolean;
+  accent: string;
+  fr: { tagline: string };
+  en: { tagline: string };
+  screens: AppScreen[];
+}
+
+// Placeholder scaffold. Drop real portrait screenshots (PNG/JPG) into
+// /public/apps/ and point each screen `src` at them — the markup just
+// renders whatever is referenced here.
+export const apps: AppEntry[] = [
+  {
+    name: 'Sprin',
+    slug: 'sprin',
+    needsBorders: false,
+    accent: '#D62B2B',
+    fr: { tagline: 'Extraire les objets d\'une pièce et estimer leur valeur' },
+    en: { tagline: 'Extract objects from a room, estimate their value' },
+    screens: [
+      { src: 'apps/sprin-0.png', alt: 'Ramen Cup — scores en direct' },
+      { src: 'apps/sprin-1.png', alt: 'Ramen Cup — classements de groupe' },
+      { src: 'apps/sprin-2.png', alt: 'Ramen Cup — tableau final' },
+    ],
+  },
+  {
+    name: 'Marauder',
+    slug: 'marauder',
+    needsBorders: false,
+    accent: '#4F46E5',
+    fr: { tagline: 'Planning automatique des tournées pour artisans.' },
+    en: { tagline: 'Automatic routing for craftsmen and deliveries' },
+    screens: [
+      { src: 'apps/router-0.png', alt: 'Studio — screen 1' },
+      { src: 'apps/router-1.png', alt: 'Studio — screen 2' },
+      { src: 'apps/router-2.png', alt: 'Studio — screen 3' },
+    ],
+  },
+  {
+    name: 'Pocket',
+    slug: 'pocket',
+    needsBorders: true,
+    accent: '#0EA5A4',
+    fr: { tagline: 'Réservation de speedboat pour transport et colis aux Maldives.' },
+    en: { tagline: 'Transportation app for Maldives speedboats' },
+    screens: [
+      { src: 'apps/islandhop-0.png', alt: 'Pocket — screen 1' },
+      { src: 'apps/islandhop-1.png', alt: 'Pocket — screen 2' },
+      { src: 'apps/islandhop-2.png', alt: 'Pocket — screen 3' },
+    ],
+  },
+  {
+    name: "Marges",
+    slug: "marges",
+    needsBorders: false,
+    accent: "#0EA5A4",
+    fr: { tagline: 'Gestion de bar et restaurant tout-en-un' },
+    en: { tagline: 'All-in-one restaurant management app' },
+    screens: [
+      { src: 'apps/marges-0.png', alt: 'Pocket — screen 1' },
+      { src: 'apps/marges-1.png', alt: 'Pocket — screen 2' },
+      { src: 'apps/marges-2.png', alt: 'Pocket — screen 3' },
+      { src: 'apps/marges-3.png', alt: 'Pocket — screen 3' },
+    ],
+  },
+  {
+    name: 'Ramen Cup',
+    slug: 'ramen-cup',
+    needsBorders: true,
+    accent: '#0EA5A4',
+    fr: { tagline: 'Suivi de la coupe du monde 2026' },
+    en: { tagline: 'Easy way to follow the World Cup \'26' },
+    screens: [
+      { src: 'apps/ramen-0.png', alt: 'Pocket — screen 1' },
+      { src: 'apps/ramen-1.png', alt: 'Pocket — screen 2' },
+      { src: 'apps/ramen-2.png', alt: 'Pocket — screen 3' },
+    ],
+  },
+];
