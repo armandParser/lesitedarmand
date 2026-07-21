@@ -35,7 +35,8 @@ export interface ProjectEntry {
   en: { desc: string; meta: string };
   href?: string;
   github?: string;
-  video: string;
+  video?: string;
+  image?: string;
 }
 
 export const indexProjects: ProjectEntry[] = [
@@ -118,6 +119,20 @@ export const indexProjects: ProjectEntry[] = [
     en: { desc: "Clearance and waste removal site.", meta: 'Site · Services' },
     href: 'https://bauer-debarras.netlify.app',
     video: 'bauer-debarras.mp4',
+  },
+  {
+    title: 'TiviTracker',
+    fr: { desc: "Suivez les séries que vous regardez, sans le superflu.", meta: 'Web · Divertissement' },
+    en: { desc: "Track the TV shows you watch, without the bloat.", meta: 'Web · Entertainment' },
+    href: 'https://tivitracker.netlify.app',
+    video: 'tivitracker.mp4',
+  },
+  {
+    title: 'Find My Football Club',
+    fr: { desc: "Trouvez le club à supporter pour les nouveaux fans de foot depuis la Coupe du Monde.", meta: 'Web · Sport' },
+    en: { desc: "Helps new football fans hooked since the World Cup find a club to support.", meta: 'Web · Sport' },
+    href: 'https://findmyfootballclub.netlify.app',
+    image: 'findmyfootballclub.jpg',
   },
 ];
 

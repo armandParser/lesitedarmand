@@ -1,0 +1,391 @@
+---
+// Liftov — creative-direction case study.
+// Standalone, URL-only page: not linked from the index and flagged noindex so
+// it surfaces only for people who have the link. A scattered "salon hang" of
+// framed pieces on a dark cosmic wall, mirroring the bar's own poster wall.
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const img = (f: string) => `${base}portfolio-liftov/web/${f}`;
+
+interface Piece {
+  src: string;
+  w: number;
+  h: number;
+  caption: string;
+  kind: string;
+  rot: number; // resting tilt, degrees
+}
+
+// Ordered to interleave photos / posters / menus so the columns stay mixed.
+const pieces: Piece[] = [
+  { src: 'photo-mur.jpg',         w: 681,  h: 1200, caption: "Le mur d'affiches",        kind: 'Photo',  rot: -2.4 },
+  { src: 'poster-scene1.jpg',     w: 1145, h: 1400, caption: 'Scène ouverte #1',         kind: 'Affiche', rot: 1.8 },
+  { src: 'menu-cosmos.jpg',       w: 1800, h: 1272, caption: 'Carte — cosmos',           kind: 'Carte',  rot: -1.2 },
+  { src: 'poster-2ans.jpg',       w: 1400, h: 1299, caption: 'Les 2 ans du Liftov',      kind: 'Affiche', rot: 2.6 },
+  { src: 'poster-carte.jpg',      w: 1038, h: 1400, caption: 'Nouvelle carte cocktails', kind: 'Affiche', rot: -1.9 },
+  { src: 'photo-dj.jpg',          w: 1400, h: 1308, caption: 'DJ set sous néon',          kind: 'Photo',  rot: 2.1 },
+  { src: 'poster-happy-hour.jpg', w: 989,  h: 1400, caption: 'Happy hour',               kind: 'Affiche', rot: -2.8 },
+  { src: 'menu-carte.jpg',        w: 1131, h: 1600, caption: 'Carte boissons & tapas',   kind: 'Carte',  rot: 1.4 },
+  { src: 'poster-scene-live.jpg', w: 1268, h: 1400, caption: 'Scène ouverte — live',     kind: 'Affiche', rot: -1.5 },
+  { src: 'photo-comptoir.jpg',    w: 1400, h: 1133, caption: 'Au comptoir',              kind: 'Photo',  rot: 2.3 },
+  { src: 'poster-1an.jpg',        w: 1120, h: 1400, caption: 'Le Liftov fête ses 1 an',  kind: 'Affiche', rot: -2.2 },
+  { src: 'poster-tapas.jpg',      w: 989,  h: 1400, caption: 'Tapas',                    kind: 'Affiche', rot: 1.7 },
+  { src: 'photo-table.jpg',       w: 1400, h: 1133, caption: 'Tapas & cocktails',        kind: 'Photo',  rot: -1.6 },
+  { src: 'poster-fermeture.jpg',  w: 1314, h: 1400, caption: 'Fermeture définitive',     kind: 'Affiche', rot: 2.0 },
+];
+
+// Serializable data for the lightbox.
+const lbData = pieces.map((p) => ({ src: img(p.src), caption: p.caption, kind: p.kind }));
+---
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <title>Liftov — Direction artistique · Armand Collier</title>
+  <style set:html={`
+    @font-face {
+      font-family: 'NeueMontreal';
+      src: url('${base}fonts/NeueMontreal-Regular.otf') format('opentype');
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: 'NeueMontreal';
+      src: url('${base}fonts/NeueMontreal-Bold.otf') format('opentype');
+      font-weight: 700; font-style: normal; font-display: swap;
+    }
+  `}></style>
+  <style is:global>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'NeueMontreal', Helvetica, Arial, system-ui, sans-serif;
+      color: #efeae1;
+      background: #07070b;
+      overflow-x: hidden;
+      overscroll-behavior: none;
+    }
+
+    /* ── The wall ─────────────────────────────────────────────── */
+    .wall {
+      position: relative;
+      min-height: 100dvh;
+      isolation: isolate;
+      background:
+        radial-gradient(120% 80% at 50% -10%, #15131f 0%, #0a0910 42%, #050509 100%);
+    }
+    /* tiled starfield + a warm gallery spotlight up top */
+    .wall::before {
+      content: '';
+      position: absolute; inset: 0;
+      z-index: -2;
+      background-image:
+        radial-gradient(1px 1px at 24px 38px,  rgba(255,255,255,0.55), transparent),
+        radial-gradient(1px 1px at 130px 90px, rgba(255,255,255,0.35), transparent),
+        radial-gradient(1.4px 1.4px at 80px 160px, rgba(196,209,255,0.45), transparent),
+        radial-gradient(1px 1px at 190px 30px, rgba(255,255,255,0.30), transparent),
+        radial-gradient(1px 1px at 50px 220px, rgba(255,240,220,0.40), transparent);
+      background-size: 220px 260px;
+      opacity: 0.7;
+      animation: twinkle 7s ease-in-out infinite;
+    }
+    .wall::after {
+      content: '';
+      position: absolute; inset: 0 0 auto 0; height: 80vh;
+      z-index: -1;
+      background: radial-gradient(60% 50% at 50% 0%, rgba(255,214,150,0.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.55; }
+      50%      { opacity: 0.85; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .wall::before { animation: none; }
+    }
+
+    /* ── Header ───────────────────────────────────────────────── */
+    .top {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.5rem, 5vw, 5rem) 0;
+    }
+    .top__back, .top__loc {
+      font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(239,234,225,0.45); text-decoration: none; transition: color 0.15s;
+    }
+    .top__back:hover { color: #efeae1; }
+
+    .intro {
+      max-width: 60rem;
+      padding: clamp(3.5rem, 11vh, 8rem) clamp(1.5rem, 5vw, 5rem) clamp(2.5rem, 7vh, 5rem);
+    }
+    .intro__kicker {
+      font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase;
+      color: #9aa9ff; margin-bottom: clamp(1.2rem, 3vh, 2rem);
+    }
+    .intro__title {
+      font-size: clamp(4.5rem, 17vw, 15rem);
+      line-height: 0.82; letter-spacing: -0.04em; font-weight: 400;
+      color: #fff;
+      margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+    }
+    .intro__lede {
+      font-size: clamp(1.05rem, 2vw, 1.5rem);
+      line-height: 1.55; color: rgba(239,234,225,0.74);
+      max-width: 40ch; font-weight: 400;
+    }
+    .intro__role {
+      margin-top: clamp(1.5rem, 4vh, 2.5rem);
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem;
+      font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(239,234,225,0.42);
+    }
+    .intro__role span { white-space: nowrap; }
+    .intro__role span::before { content: '✦  '; color: #9aa9ff; }
+
+    /* ── The salon hang (cloud of frames) ─────────────────────── */
+    .hang {
+      columns: 4;
+      column-gap: clamp(1.5rem, 3.5vw, 4rem);
+      padding: 0 clamp(1.5rem, 5vw, 5rem) clamp(5rem, 14vh, 10rem);
+    }
+    @media (max-width: 1200px) { .hang { columns: 3; } }
+    @media (max-width: 760px)  { .hang { columns: 2; column-gap: 1.1rem; } }
+
+    .frame {
+      width: var(--w, 100%);
+      margin: 0 var(--nudge, 0) clamp(2.2rem, 6vh, 4.5rem);
+      break-inside: avoid;
+      transform: rotate(var(--rot, 0deg));
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1),
+                  filter 0.5s cubic-bezier(0.16,1,0.3,1);
+      will-change: transform;
+      filter: drop-shadow(0 24px 34px rgba(0,0,0,0.55));
+    }
+    .frame__art {
+
+    }
+    .frame__mat {
+      /* display: block;
+      padding: clamp(7px, 1vw, 15px);
+      background: #ece6d8;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.28); */
+    }
+    .frame__mat img {
+      display: block; width: 100%; height: auto;
+      background: #0a0910;
+    }
+    .frame__placard {
+      
+    }
+    .frame__placard b { font-weight: 400; color: rgba(239,234,225,0.82); }
+    .frame__placard i { font-style: normal; color: #9aa9ff; }
+
+    .frame__art:hover,
+    .frame__art:focus-visible { outline: none; }
+    .frame:hover, .frame:focus-within {
+      transform: rotate(0deg) translateY(-8px);
+      filter: drop-shadow(0 34px 46px rgba(0,0,0,0.6));
+      z-index: 2;
+    }
+    .frame__art:focus-visible {
+      box-shadow:
+        inset 0 0 0 1px rgba(201,168,106,0.45),
+        0 0 0 3px #9aa9ff;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    .foot {
+      position: relative; z-index: 1;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: clamp(2.5rem, 6vh, 4.5rem) clamp(1.5rem, 5vw, 5rem);
+      display: flex; flex-wrap: wrap; gap: 1rem 2rem;
+      justify-content: space-between; align-items: center;
+      background: #05050a;
+      background-repeat: no-repeat;
+      background-position:top;
+      background-size: cover;
+      min-height: 800px;
+    }
+    .foot__note { font-size: 0.74rem; color: rgb(255, 255, 255); max-width: 44ch; line-height: 1.6; }
+    .foot__link {
+      font-size: 0.7rem; letter-spacing: 0.13em; text-transform: uppercase;
+      color: rgb(255, 255, 255); text-decoration: none; transition: color 0.15s;
+    }
+    .foot__link:hover { color: #efeae1; }
+
+    /* ── Lightbox ─────────────────────────────────────────────── */
+    .lb {
+      position: fixed; inset: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: center;
+      padding: clamp(1.5rem, 5vw, 4rem);
+      background: rgba(4,4,8,0.9);
+      -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .lb.is-open { opacity: 1; visibility: visible; }
+    .lb__stage { display: flex; flex-direction: column; align-items: center; gap: 1.1rem; max-width: 100%; }
+    .lb__img {
+      max-width: min(92vw, 1100px); max-height: 78vh;
+      width: auto; height: auto;
+      border-radius: 2px;
+      box-shadow: 0 40px 90px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(201,168,106,0.5);
+      background: #0a0910;
+    }
+    .lb__cap {
+      font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(239,234,225,0.7);
+    }
+    .lb__cap i { font-style: normal; color: #9aa9ff; }
+    .lb__btn, .lb__close {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 52px; height: 52px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.07);
+      color: #fff; font-size: 1.4rem; cursor: pointer;
+      display: grid; place-items: center; transition: background 0.15s, border-color 0.15s;
+    }
+    .lb__btn:hover, .lb__close:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.45); }
+    .lb__btn--prev { left: clamp(0.75rem, 3vw, 2.5rem); }
+    .lb__btn--next { right: clamp(0.75rem, 3vw, 2.5rem); }
+    .lb__close {
+      top: clamp(1rem, 3vw, 2rem); right: clamp(1rem, 3vw, 2rem);
+      transform: none; width: 44px; height: 44px; font-size: 1.15rem;
+    }
+    @media (max-width: 760px) { .lb__btn { width: 44px; height: 44px; font-size: 1.2rem; } }
+  </style>
+</head>
+<body>
+  <div class="wall">
+    <nav class="top">
+      <a href={base} class="top__back">← Armand Collier</a>
+      <span class="top__loc">Bordeaux · 2023–2025</span>
+    </nav>
+
+    <header class="intro">
+      <p class="intro__kicker">Direction artistique</p>
+      <h1 class="intro__title">Liftov</h1>
+      <p class="intro__lede">
+        Direction créative d'un bar à cocktails et tapas à l'identité spatiale, au cœur de Bordeaux —
+        de la première soirée aux deux ans de la maison, jusqu'à la fermeture.
+      </p>
+      <div class="intro__role">
+        <span>Identité visuelle</span>
+        <span>Affiches d'événements</span>
+        <span>Cartes &amp; menus</span>
+        <span>Scénographie</span>
+      </div>
+    </header>
+
+    <section class="hang" aria-label="Réalisations pour le Liftov">
+      {pieces.map((p, i) => {
+        // Gentle per-frame size + horizontal scatter so the hang reads as a
+        // cloud of frames, not a grid. Deterministic from the index.
+        const w = [0.82, 0.95, 1, 0.88, 0.92, 1, 0.86][i % 7];
+        const nudge = (i % 3 === 0) ? '0' : (i % 3 === 1) ? 'auto' : 'clamp(0.4rem,1.5vw,1.6rem)';
+        return (
+          <figure class="frame" style={`--w:${w * 100}%; --nudge:${nudge};`}>
+            <button class="frame__art" type="button" data-i={i} aria-label={`Agrandir : ${p.caption}`}>
+              <span class="frame__mat">
+                <img src={img(p.src)} alt={`Liftov — ${p.caption}`} width={p.w} height={p.h} loading="lazy" decoding="async" />
+              </span>
+            </button>
+            <figcaption class="frame__placard"><b>{p.caption}</b> · <i>{p.kind}</i></figcaption>
+          </figure>
+        );
+      })}
+    </section>
+
+    <footer class="foot" style={`background-image: url('${base}previews/ascii-art.png')`}>
+      <p class="foot__note">Liftov — bar à cocktails &amp; tapas, Bordeaux. Direction artistique &amp; création visuelle : Armand Collier.</p>
+      <a href="mailto:armandcollier24@gmail.com" class="foot__link">armandcollier24@gmail.com</a>
+    </footer>
+  </div>
+
+  <!-- ── Lightbox ── -->
+  <script type="application/json" id="lb-data" is:inline set:html={JSON.stringify(lbData)}></script>
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Aperçu" aria-hidden="true">
+    <button class="lb__close" id="lb-close" type="button" aria-label="Fermer">✕</button>
+    <button class="lb__btn lb__btn--prev" id="lb-prev" type="button" aria-label="Précédent">‹</button>
+    <button class="lb__btn lb__btn--next" id="lb-next" type="button" aria-label="Suivant">›</button>
+    <div class="lb__stage">
+      <img class="lb__img" id="lb-img" src="" alt="" />
+      <div class="lb__cap" id="lb-cap"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const lb = document.getElementById('lb') as HTMLElement | null;
+      const dataEl = document.getElementById('lb-data');
+      if (!lb || !dataEl) return;
+
+      type Item = { src: string; caption: string; kind: string };
+      let items: Item[] = [];
+      try { items = JSON.parse(dataEl.textContent || '[]'); } catch { return; }
+      if (!items.length) return;
+
+      const imgEl  = document.getElementById('lb-img')  as HTMLImageElement;
+      const capEl  = document.getElementById('lb-cap')  as HTMLElement;
+      const prev   = document.getElementById('lb-prev') as HTMLButtonElement;
+      const next   = document.getElementById('lb-next') as HTMLButtonElement;
+      const close  = document.getElementById('lb-close')as HTMLButtonElement;
+
+      let idx = 0;
+      let lastFocus: HTMLElement | null = null;
+
+      function render() {
+        const it = items[idx];
+        imgEl.src = it.src;
+        imgEl.alt = 'Liftov — ' + it.caption;
+        capEl.innerHTML = '<b>' + it.caption + '</b> · <i>' + it.kind + '</i>';
+      }
+      function open(i: number) {
+        idx = i;
+        lastFocus = document.activeElement as HTMLElement | null;
+        render();
+        lb!.classList.add('is-open');
+        lb!.removeAttribute('aria-hidden');
+        document.body.style.overflow = 'hidden';
+        close.focus({ preventScroll: true });
+      }
+      function shut() {
+        lb!.classList.remove('is-open');
+        lb!.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+      }
+      function nav(d: number) { idx = (idx + d + items.length) % items.length; render(); }
+
+      document.querySelectorAll<HTMLButtonElement>('.frame__art').forEach((el) => {
+        el.addEventListener('click', () => open(parseInt(el.getAttribute('data-i') || '0', 10)));
+      });
+      prev.addEventListener('click', () => nav(-1));
+      next.addEventListener('click', () => nav(1));
+      close.addEventListener('click', shut);
+      lb.addEventListener('click', (e) => { if (e.target === lb) shut(); });
+      document.addEventListener('keydown', (e) => {
+        if (!lb!.classList.contains('is-open')) return;
+        if (e.key === 'Escape') shut();
+        else if (e.key === 'ArrowLeft') nav(-1);
+        else if (e.key === 'ArrowRight') nav(1);
+      });
+
+      // Swipe on touch
+      let sx = 0;
+      imgEl.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; }, { passive: true });
+      imgEl.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].clientX - sx;
+        if (Math.abs(dx) > 45) nav(dx < 0 ? 1 : -1);
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>

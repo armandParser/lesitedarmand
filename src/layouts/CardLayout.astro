@@ -493,7 +493,11 @@ const switchHref = lang === 'fr' ? `${base}en/card` : `${base}card`;
     <ul class="proj-list" id="proj-list">
       {cardProjects.map((p) => (
         <li class="proj-card">
-          <video class="proj-video" src={`${base}previews/${p.video}`} muted loop playsinline disablepictureinpicture></video>
+          {p.video ? (
+            <video class="proj-video" src={`${base}previews/${p.video}`} muted loop playsinline disablepictureinpicture></video>
+          ) : (
+            <img class="proj-video" src={`${base}previews/${p.image}`} alt="" />
+          )}
           <span class="proj-meta">{p[lang].meta}</span>
           <h3 class="proj-title">{p.title}</h3>
           <p class="proj-desc">{p[lang].desc}</p>
@@ -571,7 +575,7 @@ const switchHref = lang === 'fr' ? `${base}en/card` : `${base}card`;
         window.scrollTo(0, targetY);
       }
 
-      const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('.proj-video'));
+      const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('video.proj-video'));
 
       const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {

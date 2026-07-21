@@ -55,16 +55,16 @@ for (let row = 0; row < rows; row++) {
   <style is:global>
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { 
-      -webkit-font-smoothing: antialiased; 
-      text-rendering: optimizeLegibility; 
-      overscroll-behavior: none;
+    html {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
     body {
       font-family: 'NeueMontreal', Helvetica, Arial, system-ui, sans-serif;
       background: #fff;
       color: #111;
       overflow-x: hidden;
+      overscroll-behavior: none;
     }
 
     /* ================================================================
@@ -1094,7 +1094,11 @@ for (let row = 0; row < rows; row++) {
     <ul class="m-proj__list">
       {indexProjects.map((p) => (
         <li class="m-proj__item">
-          <video class="m-proj__video" src={`${base}previews/${p.video}`} poster={`${base}previews/${p.video.replace('.mp4', '-poster.jpg')}`} muted loop playsinline disablepictureinpicture></video>
+          {p.video ? (
+            <video class="m-proj__video" src={`${base}previews/${p.video}`} poster={`${base}previews/${p.video.replace('.mp4', '-poster.jpg')}`} muted loop playsinline disablepictureinpicture></video>
+          ) : (
+            <img class="m-proj__video" src={`${base}previews/${p.image}`} alt="" />
+          )}
           <span class="m-proj__meta">{p[lang].meta}</span>
           <h3 class="m-proj__title">{p.title}</h3>
           <p class="m-proj__desc">{p[lang].desc}</p>
@@ -1156,7 +1160,11 @@ for (let row = 0; row < rows; row++) {
     <ul class="proj-list" id="proj-list">
       {indexProjects.map((p) => (
         <li class="proj-card">
-          <video class="proj-video" src={`${base}previews/${p.video}`} poster={`${base}previews/${p.video.replace('.mp4', '-poster.jpg')}`} muted loop playsinline disablepictureinpicture></video>
+          {p.video ? (
+            <video class="proj-video" src={`${base}previews/${p.video}`} poster={`${base}previews/${p.video.replace('.mp4', '-poster.jpg')}`} muted loop playsinline disablepictureinpicture></video>
+          ) : (
+            <img class="proj-video" src={`${base}previews/${p.image}`} alt="" />
+          )}
           <span class="proj-meta">{p[lang].meta}</span>
           <h3 class="proj-title">{p.title}</h3>
           <p class="proj-desc">{p[lang].desc}</p>
@@ -1256,7 +1264,7 @@ for (let row = 0; row < rows; row++) {
 
       // ── Mobile: video autoplay + apps carousel chevrons ──
       if (window.innerWidth <= 720) {
-        const mobileVideos = Array.from(document.querySelectorAll<HTMLVideoElement>('.m-proj__video'));
+        const mobileVideos = Array.from(document.querySelectorAll<HTMLVideoElement>('video.m-proj__video'));
         const obs = new IntersectionObserver((entries) => {
           entries.forEach((e) => {
             const v = e.target as HTMLVideoElement;
@@ -1343,7 +1351,7 @@ for (let row = 0; row < rows; row++) {
       }
 
       /* ── video visibility ── */
-      const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('.proj-video'));
+      const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('video.proj-video'));
 
       const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
