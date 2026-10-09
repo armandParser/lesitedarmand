@@ -1,0 +1,459 @@
+---
+import Icon from '../components/Icon.astro';
+import { site } from '../i18n/site';
+import type { Lang } from '../i18n/translations';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = site[lang];
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const altHref = lang === 'fr' ? `${base}en/` : base;
+const origin = Astro.site ? Astro.site.origin : '';
+const canonical = `${origin}${lang === 'fr' ? base : `${base}en/`}`;
+const ogImage = `${origin}${base}og.jpg`;
+
+const navLinks = [
+  { id: 'work', label: t.nav.work },
+  { id: 'expertise', label: t.nav.expertise },
+  { id: 'about', label: t.nav.about },
+  { id: 'contact', label: t.nav.contact },
+];
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{t.title}</title>
+  <meta name="description" content={t.description} />
+  <link rel="canonical" href={canonical} />
+  <link rel="alternate" hreflang="fr" href={`${origin}${base}`} />
+  <link rel="alternate" hreflang="en" href={`${origin}${base}en/`} />
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#181818" media="(prefers-color-scheme: dark)" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={t.title} />
+  <meta property="og:description" content={t.description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:locale" content={lang === 'fr' ? 'fr_FR' : 'en_US'} />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet" />
+
+  <!-- Theme before first paint: saved choice, else OS preference. -->
+  <script is:inline>
+    (function () {
+      var d = document.documentElement;
+      var saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (e) {}
+      var dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      d.dataset.theme = dark ? 'dark' : 'light';
+      d.classList.add('js');
+    })();
+  </script>
+
+  <style is:global>
+    :root {
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-2: #f7f7f7;
+      --surface-3: #efefef;
+      --border: #ebebeb;
+      --border-strong: #dddddd;
+      --text: #222222;
+      --muted: #6a6a6a;
+      --faint: #9a9a9a;
+      --accent: #d62b2b;
+      --accent-soft: #fdecec;
+      --on-accent: #ffffff;
+      --ok: #16a34a;
+      --glass: rgb(255 255 255 / 0.78);
+      --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 1px rgb(0 0 0 / 0.04);
+      --shadow-md: 0 6px 16px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+      --shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.18);
+      --heading-from: #000000;
+      --heading-to: #666666;
+
+      --ease: cubic-bezier(0.32, 0.72, 0, 1);
+      --font: 'Geist', ui-sans-serif, system-ui, sans-serif;
+      --mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --gutter: 24px;
+      --max: 1280px;
+      color-scheme: light;
+    }
+
+    :root[data-theme='dark'] {
+      --bg: #181818;
+      --surface: #1f1f1f;
+      --surface-2: #272727;
+      --surface-3: #313131;
+      --border: #313131;
+      --border-strong: #3d3d3d;
+      --text: #f2f2f2;
+      --muted: #a3a3a3;
+      --faint: #777777;
+      --accent: #f05454;
+      --accent-soft: #3a2020;
+      --on-accent: #ffffff;
+      --ok: #22c55e;
+      --glass: rgb(31 31 31 / 0.78);
+      --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+      --shadow-md: 0 6px 16px rgb(0 0 0 / 0.45);
+      --shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.6);
+      --heading-from: #ffffff;
+      --heading-to: #9b9b9b;
+      color-scheme: dark;
+    }
+
+    @media (min-width: 768px) { :root { --gutter: 40px; } }
+    @media (min-width: 1280px) { :root { --gutter: 80px; } }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; scroll-padding-top: 96px; }
+    body {
+      font-family: var(--font);
+      font-size: 1rem;
+      line-height: 1.5rem;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background-color 400ms var(--ease), color 400ms var(--ease);
+    }
+    img, video, svg { display: block; max-width: 100%; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    a { color: inherit; }
+    h1, h2, h3 { text-wrap: balance; font-weight: 600; }
+    p { text-wrap: pretty; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+    }
+
+    .container { width: 100%; max-width: calc(var(--max) + var(--gutter) * 2); margin-inline: auto; padding-inline: var(--gutter); }
+    .section { padding-block: 64px; }
+    @media (min-width: 768px) { .section { padding-block: 96px; } }
+
+    .kicker {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.875rem; line-height: 1.25rem; font-weight: 500;
+      color: var(--accent);
+    }
+    .h2 { font-size: 1.875rem; line-height: 2.25rem; letter-spacing: -0.02em; margin-top: 8px; white-space: pre-line; }
+    @media (min-width: 768px) { .h2 { font-size: 2.25rem; line-height: 2.5rem; } }
+    .lede { color: var(--muted); font-size: 1rem; line-height: 1.5rem; max-width: 680px; margin-top: 12px; }
+    @media (min-width: 768px) { .lede { font-size: 1.125rem; line-height: 1.75rem; } }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 8px 12px; min-height: 40px;
+      border-radius: 12px;
+      font-size: 1rem; line-height: 1.5rem; font-weight: 600;
+      text-decoration: none; white-space: nowrap;
+      transition: transform 300ms var(--ease), background-color 300ms var(--ease), box-shadow 300ms var(--ease), border-color 300ms var(--ease);
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn--lg { min-height: 48px; padding: 12px 24px; }
+    .btn--primary { background: var(--text); color: var(--bg); }
+    .btn--primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn--accent { background: var(--accent); color: var(--on-accent); }
+    .btn--accent:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn--ghost { background: var(--surface); border: 1px solid var(--border-strong); }
+    .btn--ghost:hover { background: var(--surface-2); }
+    .btn--sm { font-size: 0.875rem; line-height: 1.25rem; min-height: 36px; border-radius: 9999px; padding: 8px 16px; }
+
+    .icon-btn {
+      display: inline-grid; place-items: center;
+      width: 40px; height: 40px; border-radius: 9999px;
+      transition: background-color 300ms var(--ease), transform 300ms var(--ease);
+    }
+    .icon-btn:hover { background: var(--surface-2); }
+    .icon-btn:active { transform: scale(0.94); }
+
+    /* Scroll reveal (only when JS is running, so content is never hidden without it) */
+    .js .reveal {
+      opacity: 0; transform: translateY(64px); filter: blur(12px);
+      transition: opacity 900ms var(--ease), transform 900ms var(--ease), filter 900ms var(--ease);
+      transition-delay: var(--delay, 0ms);
+    }
+    .js .reveal.is-in { opacity: 1; transform: none; filter: none; }
+    @media (prefers-reduced-motion: reduce) { .js .reveal { opacity: 1; transform: none; filter: none; } }
+
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    .skip {
+      position: fixed; top: 8px; left: 8px; z-index: 100;
+      padding: 8px 12px; border-radius: 8px; background: var(--text); color: var(--bg);
+      transform: translateY(-200%); transition: transform 300ms var(--ease);
+    }
+    .skip:focus { transform: none; }
+
+    /* Toast */
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; z-index: 90;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 16px; border-radius: 9999px;
+      background: var(--text); color: var(--bg);
+      font-size: 0.875rem; line-height: 1.25rem; font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      transform: translate(-50%, 96px); opacity: 0; pointer-events: none;
+      transition: transform 600ms var(--ease), opacity 600ms var(--ease);
+    }
+    .toast.is-on { transform: translate(-50%, 0); opacity: 1; }
+
+    /* Theme switch: circular reveal from the toggle */
+    ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">{t.skip}</a>
+
+  <!-- ─── Island nav ─── -->
+  <header class="nav" id="nav">
+    <nav class="nav__pill" aria-label="Main">
+      <a class="nav__brand" href="#top" aria-label="Armand Collier">
+        <img src={`${base}parser/armand.jpg`} alt="" width="28" height="28" />
+        <span>Armand</span>
+      </a>
+      <ul class="nav__links">
+        {navLinks.map((l) => (
+          <li><a href={`#${l.id}`} data-nav={l.id}>{l.label}</a></li>
+        ))}
+      </ul>
+      <span class="nav__sep" aria-hidden="true"></span>
+      <a class="icon-btn nav__lang" href={altHref} hreflang={lang === 'fr' ? 'en' : 'fr'} aria-label={t.nav.lang}>
+        <span>{t.nav.langShort}</span>
+      </a>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label={t.nav.theme}>
+        <Icon name="sun" class="theme-sun" />
+        <Icon name="moon" class="theme-moon" />
+      </button>
+      <a class="btn btn--accent btn--sm nav__cta" href="#contact">{t.nav.cta}</a>
+      <button class="icon-btn nav__burger" type="button" aria-label={t.nav.menu} aria-expanded="false" aria-controls="menu">
+        <span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <div class="menu" id="menu" hidden>
+    <ul>
+      {navLinks.map((l, i) => (
+        <li style={`--i:${i}`}><a href={`#${l.id}`}>{l.label}</a></li>
+      ))}
+      <li style={`--i:${navLinks.length}`}><a href={altHref}>{t.nav.lang}</a></li>
+    </ul>
+  </div>
+
+  <main id="main">
+    <slot />
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© {new Date().getFullYear()} {t.footer.rights}</span>
+      <div class="footer__links">
+        <a href="https://github.com/armandParser" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://parser-lab.com" target="_blank" rel="noopener noreferrer">Parser</a>
+        <a href={altHref}>{t.nav.lang}</a>
+        <a href="#top">{t.footer.top}</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <Icon name="check" size={16} />
+    <span id="toast-text"></span>
+  </div>
+
+  <style>
+    .nav {
+      position: fixed; top: 16px; left: 0; right: 0; z-index: 50;
+      display: flex; justify-content: center;
+      padding-inline: 16px;
+      pointer-events: none;
+      transition: transform 600ms var(--ease);
+    }
+    @media (min-width: 768px) { .nav { top: 24px; } }
+    .nav.is-hidden { transform: translateY(-160%); }
+
+    .nav__pill {
+      pointer-events: auto;
+      display: flex; align-items: center; gap: 4px;
+      width: max-content; max-width: 100%;
+      padding: 4px 4px 4px 8px;
+      border-radius: 9999px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+    }
+
+    .nav__brand {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 4px 12px 4px 0;
+      font-weight: 600; text-decoration: none;
+      font-size: 0.875rem; line-height: 1.25rem;
+    }
+    .nav__brand img { width: 28px; height: 28px; border-radius: 9999px; object-fit: cover; }
+
+    .nav__links { display: none; list-style: none; gap: 2px; }
+    .nav__links a {
+      display: block; padding: 8px 12px; border-radius: 9999px;
+      font-size: 0.875rem; line-height: 1.25rem; font-weight: 500;
+      color: var(--muted); text-decoration: none;
+      transition: color 300ms var(--ease), background-color 300ms var(--ease);
+    }
+    .nav__links a:hover { color: var(--text); background: var(--surface-2); }
+    .nav__links a[aria-current='true'] { color: var(--text); background: var(--surface-2); }
+
+    .nav__sep { display: none; width: 1px; height: 24px; background: var(--border-strong); margin-inline: 4px; }
+    .nav__lang { font-size: 0.75rem; line-height: 1rem; font-weight: 600; text-decoration: none; }
+    .nav__cta { display: none; margin-left: 4px; }
+
+    :global([data-theme='light'] .theme-moon), :global([data-theme='dark'] .theme-sun) { display: none; }
+
+    .nav__burger { position: relative; }
+    .nav__burger span {
+      position: absolute; left: 12px; width: 16px; height: 2px; border-radius: 2px; background: currentColor;
+      transition: transform 500ms var(--ease);
+    }
+    .nav__burger span:first-child { transform: translateY(-3px); }
+    .nav__burger span:last-child { transform: translateY(3px); }
+    .nav__burger[aria-expanded='true'] span:first-child { transform: rotate(45deg); }
+    .nav__burger[aria-expanded='true'] span:last-child { transform: rotate(-45deg); }
+
+    @media (min-width: 900px) {
+      .nav__links { display: flex; }
+      .nav__sep { display: block; }
+      .nav__cta { display: inline-flex; }
+      .nav__burger { display: none; }
+      .nav__lang { display: inline-grid; }
+    }
+    @media (max-width: 899px) { .nav__lang { display: none; } }
+
+    .menu {
+      position: fixed; inset: 0; z-index: 40;
+      display: grid; place-items: center;
+      background: var(--glass);
+      -webkit-backdrop-filter: blur(64px); backdrop-filter: blur(64px);
+      opacity: 0; transition: opacity 500ms var(--ease);
+    }
+    .menu[hidden] { display: none; }
+    .menu.is-open { opacity: 1; }
+    .menu ul { list-style: none; text-align: center; display: grid; gap: 8px; }
+    .menu a {
+      display: block; padding: 8px 24px;
+      font-size: 2.25rem; line-height: 2.5rem; font-weight: 600; letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .menu li { opacity: 0; transform: translateY(48px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); transition-delay: calc(100ms + var(--i) * 50ms); }
+    .menu.is-open li { opacity: 1; transform: none; }
+
+    .footer { padding-block: 32px; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.875rem; line-height: 1.25rem; }
+    .footer__inner { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; }
+    .footer__links { display: flex; flex-wrap: wrap; gap: 24px; }
+    .footer__links a { text-decoration: none; transition: color 300ms var(--ease); }
+    .footer__links a:hover { color: var(--text); }
+  </style>
+
+  <script>
+    import { toast } from '../scripts/toast';
+
+    const root = document.documentElement;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ── Theme toggle with a circular reveal from the button ── */
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        const apply = () => {
+          root.dataset.theme = next;
+          try { localStorage.setItem('theme', next); } catch {}
+        };
+        const doc = document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } };
+        if (reduce || !doc.startViewTransition) return apply();
+        const r = btn.getBoundingClientRect();
+        const x = r.left + r.width / 2;
+        const y = r.top + r.height / 2;
+        const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+        doc.startViewTransition(apply).ready.then(() => {
+          root.animate(
+            { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+            { duration: 700, easing: 'cubic-bezier(0.32, 0.72, 0, 1)', pseudoElement: '::view-transition-new(root)' },
+          );
+        });
+      });
+    });
+
+    /* ── Mobile menu ── */
+    const burger = document.querySelector<HTMLButtonElement>('.nav__burger')!;
+    const menu = document.getElementById('menu')!;
+    const setMenu = (open: boolean) => {
+      burger.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
+      if (open) {
+        menu.hidden = false;
+        requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add('is-open')));
+      } else {
+        menu.classList.remove('is-open');
+        setTimeout(() => { if (!menu.classList.contains('is-open')) menu.hidden = true; }, 500);
+      }
+    };
+    burger.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
+    menu.addEventListener('click', (e) => { if ((e.target as Element).closest('a')) setMenu(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) setMenu(false); });
+
+    /* ── Hide the nav while scrolling down, bring it back on the way up ── */
+    const nav = document.getElementById('nav')!;
+    let lastY = scrollY;
+    let ticking = false;
+    addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = scrollY;
+        const hidden = y > 320 && y > lastY + 4 && burger.getAttribute('aria-expanded') !== 'true';
+        if (Math.abs(y - lastY) > 4) {
+          nav.classList.toggle('is-hidden', hidden);
+          root.classList.toggle('nav-hidden', hidden);
+          lastY = y;
+        }
+        ticking = false;
+      });
+    }, { passive: true });
+
+    /* ── Current section in the nav ── */
+    const navLinks = document.querySelectorAll<HTMLAnchorElement>('[data-nav]');
+    const sectionIO = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        navLinks.forEach((a) => a.setAttribute('aria-current', String(a.dataset.nav === e.target.id)));
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    navLinks.forEach((a) => { const s = document.getElementById(a.dataset.nav!); if (s) sectionIO.observe(s); });
+
+    /* ── Scroll reveals ── */
+    const revealIO = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); revealIO.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal').forEach((el) => revealIO.observe(el));
+
+    /* ── Copy buttons ([data-copy="text"] [data-copied="message"]) ── */
+    document.addEventListener('click', (e) => {
+      const btn = (e.target as Element).closest<HTMLElement>('[data-copy]');
+      if (!btn) return;
+      navigator.clipboard?.writeText(btn.dataset.copy!).then(() => toast(btn.dataset.copied || 'Copied'));
+    });
+  </script>
+</body>
+</html>

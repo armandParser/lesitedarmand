@@ -1,0 +1,140 @@
+---
+import Icon from '../Icon.astro';
+import { site } from '../../i18n/site';
+import { countBy } from '../../data/projects';
+import type { Lang } from '../../i18n/translations';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = site[lang].about;
+const parserCount = countBy((p) => p.source === 'parser');
+---
+<section class="section about" id="about" aria-labelledby="about-title">
+  <div class="container about__grid">
+    <div class="reveal">
+      <span class="kicker">{t.kicker}</span>
+      <h2 class="h2" id="about-title">{t.title}</h2>
+      {t.body.map((p) => <p class="about__p">{p}</p>)}
+    </div>
+
+    <ol class="xp">
+      <li class="xp__item reveal" style="--delay:120ms">
+        <p class="xp__when"><span class="xp__dot xp__dot--live" aria-hidden="true"></span><span>{t.now}</span></p>
+    <article class="parser">
+      <div class="parser__head">
+        <span class="parser__logo" aria-hidden="true">P</span>
+        <div>
+          <h3 class="parser__name">Parser</h3>
+          <p class="parser__role">{t.parserRole}</p>
+        </div>
+        <span class="parser__count">{site[lang].work.count(parserCount)}</span>
+      </div>
+      <p class="parser__body">{t.parserBody}</p>
+      <ol class="steps">
+        {t.process.map((s, i) => (
+          <li><span class="steps__n">{i + 1}</span>{s}</li>
+        ))}
+      </ol>
+      <a class="btn btn--ghost parser__link" href={`https://parser-lab.com/${lang}/`} target="_blank" rel="noopener noreferrer">
+        {t.parserLink}
+        <Icon name="arrow-up-right" size={16} />
+      </a>
+    </article>
+      </li>
+
+      <li class="xp__item reveal" style="--delay:200ms">
+        <p class="xp__when"><span class="xp__dot" aria-hidden="true"></span><span>{t.before} · <time datetime="2018">2018</time>–<time datetime="2024">2024</time></span></p>
+        <article class="escenci">
+          <div class="parser__head">
+            <span class="escenci__logo" aria-hidden="true">E</span>
+            <div>
+              <h3 class="parser__name">Escenci</h3>
+              <p class="parser__role">{t.escenciRole}</p>
+            </div>
+          </div>
+          <p class="parser__body">{t.escenciBody}</p>
+          <ul class="escenci__tags">
+            {t.escenciTags.map((tag) => <li>{tag}</li>)}
+          </ul>
+          <a class="btn btn--ghost escenci__link" href="#sunrise">
+            {t.escenciProject}
+            <Icon name="arrow-right" size={16} />
+          </a>
+        </article>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<style>
+  .about__grid { display: grid; gap: 48px; align-items: start; }
+  @media (min-width: 960px) { .about__grid { grid-template-columns: 1fr 448px; gap: 80px; } }
+
+  .about__p { margin-top: 16px; max-width: 640px; font-size: 1.125rem; line-height: 1.75rem; color: var(--muted); }
+  .about__p:first-of-type { margin-top: 24px; color: var(--text); }
+
+  /* Experience timeline: a rail joins the dots of each role. */
+  .xp { list-style: none; position: relative; display: grid; gap: 24px; }
+  .xp::before {
+    content: ''; position: absolute; left: 4px; top: 12px; bottom: 12px; width: 2px; border-radius: 2px;
+    background: var(--border);
+  }
+  .xp__item { padding-left: 24px; }
+  .xp__when {
+    position: relative; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+    font-size: 0.75rem; line-height: 1rem; font-weight: 600; letter-spacing: 0.02em; color: var(--muted);
+  }
+  .xp__dot {
+    position: absolute; left: -24px; width: 10px; height: 10px; border-radius: 9999px;
+    background: var(--bg); border: 2px solid var(--border-strong);
+  }
+  .xp__dot--live { background: var(--ok); border-color: var(--bg); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ok) 30%, transparent); }
+
+  .parser {
+    padding: 24px; border-radius: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+  }
+  .parser__head { display: flex; align-items: center; gap: 12px; }
+  .parser__logo {
+    flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px;
+    background: #111; color: #fff; font-weight: 700; font-size: 1.25rem; line-height: 1.75rem;
+  }
+  [data-theme='dark'] .parser__logo { background: #f2f2f2; color: #111; }
+  .parser__name { font-size: 1.125rem; line-height: 1.75rem; }
+  .parser__role { font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); }
+  .parser__count {
+    margin-left: auto; padding: 4px 12px; border-radius: 9999px; white-space: nowrap;
+    background: var(--surface-2); font-family: var(--mono); font-size: 0.75rem; line-height: 1rem;
+  }
+  .parser__body { margin-top: 16px; font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); }
+
+  .steps { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 24px; }
+  .steps li {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-radius: 12px; background: var(--surface-2);
+    font-size: 0.875rem; line-height: 1.25rem; font-weight: 500;
+  }
+  .steps__n {
+    display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 9999px;
+    background: var(--surface); font-family: var(--mono); font-size: 0.75rem; line-height: 1rem; color: var(--muted);
+  }
+  .parser__link { width: 100%; margin-top: 24px; }
+
+  /* Past role: flatter than the current one so Parser stays the focus. */
+  .escenci { padding: 24px; border-radius: 24px; background: var(--surface-2); border: 1px solid var(--border); }
+  .escenci__logo {
+    flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px;
+    background: var(--surface); border: 1px solid var(--border-strong);
+    font-weight: 700; font-size: 1.25rem; line-height: 1.75rem;
+  }
+  .escenci__link { width: 100%; margin-top: 24px; }
+  .escenci__tags { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .escenci__tags li {
+    padding: 4px 12px; border-radius: 9999px; background: var(--surface);
+    font-size: 0.75rem; line-height: 1rem; font-weight: 500;
+  }
+</style>

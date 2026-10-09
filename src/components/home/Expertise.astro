@@ -1,0 +1,158 @@
+---
+import Icon from '../Icon.astro';
+import { site } from '../../i18n/site';
+import { projects } from '../../data/projects';
+import { stack } from '../../data/stack';
+import type { IconName } from '../../data/icons';
+import type { Lang } from '../../i18n/translations';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = site[lang].expertise;
+const titleOf = (slug: string) => projects.find((p) => p.slug === slug)?.title ?? slug;
+---
+<section class="section expertise" id="expertise" aria-labelledby="expertise-title">
+  <div class="container">
+    <header class="reveal">
+      <span class="kicker">{t.kicker}</span>
+      <h2 class="h2" id="expertise-title">{t.title}</h2>
+      <p class="lede">{t.sub}</p>
+    </header>
+
+    <ol class="layers">
+      {t.items.map((item, i) => (
+        <li class="layer reveal" style={`--delay:${(i % 3) * 80}ms`}>
+          <div class="layer__top">
+            <span class="layer__icon"><Icon name={item.icon as IconName} size={24} /></span>
+            <span class="layer__n">{String(i + 1).padStart(2, '0')}</span>
+          </div>
+          <h3 class="layer__title">{item.title}</h3>
+          <p class="layer__body">{item.body}</p>
+          <div class="layer__refs">
+            {item.refs.map((slug) => (
+              <a href={`#${slug}`} class="ref">
+                {t.seen} {titleOf(slug)}
+                <Icon name="arrow-up-right" size={12} />
+              </a>
+            ))}
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="stack reveal">
+      <h3 class="stack__title">{t.stackTitle}</h3>
+      <dl class="stack__groups">
+        {stack.map((g) => (
+          <div class="stack__group">
+            <dt>{g.label[lang]}</dt>
+            <dd>
+              <ul>{g.items.map((item) => <li>{item}</li>)}</ul>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="tagline" aria-label={site[lang].tagline}>
+  <div class="container">
+    <p class="tagline__text" aria-hidden="true">
+      {site[lang].tagline.split(' ').map((w) => <span class="tw">{w} </span>)}
+    </p>
+  </div>
+</section>
+
+<style>
+  .expertise { background: var(--surface-2); transition: background-color 400ms var(--ease); }
+
+  .layers {
+    list-style: none;
+    display: grid; gap: 16px; margin-top: 40px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) { .layers { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .layers { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+
+  .layer {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 24px; border-radius: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    transition: transform 500ms var(--ease), box-shadow 500ms var(--ease), opacity 900ms var(--ease), filter 900ms var(--ease);
+  }
+  .layer:hover { box-shadow: var(--shadow-md); }
+  .layer__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .layer__icon {
+    display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .layer__n { font-family: var(--mono); font-size: 0.75rem; line-height: 1rem; color: var(--faint); }
+  .layer__title { font-size: 1.125rem; line-height: 1.75rem; }
+  .layer__body { color: var(--muted); font-size: 0.875rem; line-height: 1.25rem; flex: 1; }
+  .layer__refs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .ref {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 12px; border-radius: 9999px;
+    background: var(--surface-2); color: var(--text);
+    font-size: 0.75rem; line-height: 1rem; font-weight: 500; text-decoration: none;
+    transition: background-color 300ms var(--ease), transform 300ms var(--ease);
+  }
+  .ref:hover { background: var(--surface-3); transform: translateY(-1px); }
+  .ref:active { transform: scale(0.98); }
+
+  /* Toolbox: one row per layer, label on the left, chips on the right. */
+  .stack {
+    margin-top: 24px; padding: 24px; border-radius: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+  }
+  @media (min-width: 768px) { .stack { padding: 32px; } }
+  .stack__title { font-size: 1.125rem; line-height: 1.75rem; }
+  .stack__groups { display: grid; margin-top: 8px; }
+  .stack__group {
+    display: grid; gap: 8px; padding-block: 16px;
+  }
+  .stack__group + .stack__group { box-shadow: 0 -1px 0 var(--border); }
+  @media (min-width: 768px) { .stack__group { grid-template-columns: 160px 1fr; gap: 24px; align-items: baseline; } }
+  .stack__group dt { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; color: var(--muted); }
+  .stack__group ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .stack__group li {
+    padding: 4px 12px; border-radius: 9999px; background: var(--surface-2);
+    font-family: var(--mono); font-size: 0.75rem; line-height: 1rem;
+    transition: background-color 300ms var(--ease);
+  }
+  .stack__group li:hover { background: var(--surface-3); }
+
+  /* ── Tagline: words light up one by one as they cross the reading line ── */
+  .tagline { padding-block: 96px; }
+  @media (min-width: 768px) { .tagline { padding-block: 128px; } }
+  .tagline__text {
+    max-width: 880px;
+    font-size: 2.25rem; line-height: 2.5rem; font-weight: 600; letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  @media (min-width: 768px) { .tagline__text { font-size: 3.75rem; line-height: 1; } }
+  .tw { color: color-mix(in srgb, var(--text) 25%, transparent); transition: color 700ms var(--ease); }
+  .tw.is-lit { color: var(--text); }
+  :global(html:not(.js)) .tw { color: var(--text); }
+</style>
+
+<script>
+  const words = Array.from(document.querySelectorAll<HTMLElement>('.tw'));
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    words.forEach((w) => w.classList.add('is-lit'));
+  } else {
+    // A word lights up once it rises above 60% of the viewport height, and dims
+    // again if the reader scrolls back up past it.
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        const above = e.boundingClientRect.top < (e.rootBounds?.bottom ?? innerHeight * 0.6);
+        e.target.classList.toggle('is-lit', e.isIntersecting || above);
+      });
+    }, { rootMargin: '0px 0px -40% 0px' });
+    words.forEach((w) => io.observe(w));
+  }
+</script>

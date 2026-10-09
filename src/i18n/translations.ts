@@ -108,8 +108,8 @@ export const indexProjects: ProjectEntry[] = [
   },
   {
     title: 'Liftov Bordeaux',
-    fr: { desc: 'Bar bordelais.', meta: 'Site · Fitness' },
-    en: { desc: 'Bordeaux bar.', meta: 'Site · Fitness' },
+    fr: { desc: 'Bar bordelais.', meta: 'Site · Bar' },
+    en: { desc: 'Bordeaux bar.', meta: 'Site · Bar' },
     href: 'https://liftovbordeaux.fr',
     video: 'liftov-bordeaux.mp4',
   },

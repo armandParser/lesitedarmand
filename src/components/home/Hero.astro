@@ -1,0 +1,207 @@
+---
+import Icon from '../Icon.astro';
+import { site } from '../../i18n/site';
+import { projects, countBy } from '../../data/projects';
+import type { Lang } from '../../i18n/translations';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = site[lang].hero;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+
+const stats = [
+  { value: String(projects.length), label: t.stats.shipped },
+  { value: String(countBy((p) => p.kinds.includes('saas') || p.kinds.includes('webapp'))), label: t.stats.saas },
+  { value: String(countBy((p) => p.kinds.includes('mobile'))), label: t.stats.mobile },
+  { value: '2018', label: t.stats.since },
+];
+---
+<section class="hero container" id="top">
+  <div class="hero__banner">
+    <img src={`${base}previews/ascii-banner.webp`} alt="" width="1800" height="945" fetchpriority="high" />
+  </div>
+
+  <div class="hero__head">
+    <div class="hero__avatar">
+      <img src={`${base}parser/armand.jpg`} alt="Armand Collier" width="400" height="400" />
+      <span class="hero__online" aria-hidden="true"></span>
+    </div>
+    <div class="hero__actions">
+      <a class="btn btn--primary" href="#work">
+        {t.primary}
+        <Icon name="arrow-right" size={16} />
+      </a>
+      <a class="btn btn--ghost" href="#contact">{t.secondary}</a>
+    </div>
+  </div>
+
+  <div class="hero__id">
+    <h1 class="hero__name">
+      <span class="hero__name-text">Armand Collier</span>
+      <span class="hero__verified" title={t.verified}>
+        <Icon name="seal-check-fill" size={28} />
+        <span class="sr-only">{t.verified}</span>
+      </span>
+    </h1>
+    <p class="hero__role" aria-label={t.roles.join(', ')}>
+      <span class="hero__typed" data-roles={JSON.stringify(t.roles)} aria-hidden="true">{t.roles[0]}</span><span class="hero__caret" aria-hidden="true"></span>
+    </p>
+    <div class="hero__meta">
+      <span class="hero__meta-item"><Icon name="map-pin" size={16} />{t.location}</span>
+      <span class="hero__pill"><span class="hero__dot" aria-hidden="true"></span>{t.available}</span>
+    </div>
+    <p class="hero__lead">{t.lead}</p>
+    <div class="hero__actions-m">
+      <a class="btn btn--primary btn--lg" href="#work">{t.primary}<Icon name="arrow-right" size={16} /></a>
+      <a class="btn btn--ghost btn--lg" href="#contact">{t.secondary}</a>
+    </div>
+  </div>
+
+  <dl class="hero__stats reveal">
+    {stats.map((s) => (
+      <div class="hero__stat">
+        <dt>{s.label}</dt>
+        <dd>{s.value}</dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<style>
+  .hero { padding-top: 96px; }
+  @media (min-width: 768px) { .hero { padding-top: 112px; } }
+
+  .hero__banner {
+    position: relative;
+    height: 176px;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #0b0f1a;
+  }
+  @media (min-width: 768px) { .hero__banner { height: 288px; } }
+  .hero__banner img {
+    width: 100%; height: 100%; object-fit: cover;
+    animation: hero-zoom 1600ms var(--ease) both;
+  }
+  @keyframes hero-zoom { from { transform: scale(1.08); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .hero__head {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
+    margin-top: -48px; padding-inline: 16px;
+  }
+  @media (min-width: 768px) { .hero__head { margin-top: -64px; padding-inline: 32px; } }
+
+  .hero__avatar { position: relative; flex: none; }
+  .hero__avatar img {
+    width: 96px; height: 96px; border-radius: 9999px; object-fit: cover;
+    border: 4px solid var(--bg);
+    box-shadow: var(--shadow-md);
+    background: var(--surface-2);
+  }
+  @media (min-width: 768px) { .hero__avatar img { width: 128px; height: 128px; } }
+  .hero__online {
+    position: absolute; right: 8px; bottom: 8px;
+    width: 16px; height: 16px; border-radius: 9999px;
+    background: var(--ok); border: 4px solid var(--bg);
+  }
+
+  .hero__actions { display: none; gap: 8px; padding-bottom: 8px; }
+  @media (min-width: 640px) { .hero__actions { display: flex; } }
+  .hero__actions-m { display: grid; gap: 8px; margin-top: 24px; }
+  @media (min-width: 640px) { .hero__actions-m { display: none; } }
+
+  .hero__id { padding-inline: 16px; margin-top: 16px; }
+  @media (min-width: 768px) { .hero__id { padding-inline: 32px; } }
+
+  .hero__name {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 2.25rem; line-height: 2.5rem; font-weight: 700; letter-spacing: -0.035em;
+  }
+  @media (min-width: 768px) { .hero__name { font-size: 3rem; line-height: 1; } }
+  .hero__name-text {
+    background: linear-gradient(90deg, var(--heading-from), var(--heading-to));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    padding-bottom: 4px;
+  }
+  .hero__verified { color: #2f80ed; display: inline-flex; }
+  [data-theme='dark'] .hero__verified { color: #5aa2ff; }
+
+  .hero__role {
+    margin-top: 8px; min-height: 32px;
+    font-size: 1.25rem; line-height: 1.75rem; font-weight: 500;
+    color: var(--accent);
+  }
+  @media (min-width: 768px) { .hero__role { font-size: 1.5rem; line-height: 2rem; } }
+  .hero__caret {
+    display: inline-block; width: 2px; height: 1em; margin-left: 2px;
+    background: currentColor; vertical-align: -0.12em;
+    animation: caret 1s steps(1) infinite;
+  }
+  @keyframes caret { 50% { opacity: 0; } }
+
+  .hero__meta {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    margin-top: 12px;
+    font-size: 0.875rem; line-height: 1.25rem; color: var(--muted);
+  }
+  .hero__meta-item { display: inline-flex; align-items: center; gap: 4px; }
+  .hero__pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 12px; border-radius: 9999px;
+    background: color-mix(in srgb, var(--ok) 12%, transparent);
+    color: var(--ok); font-weight: 500;
+  }
+  .hero__dot { position: relative; width: 8px; height: 8px; border-radius: 9999px; background: currentColor; }
+  .hero__dot::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor;
+    animation: ping 2s var(--ease) infinite;
+  }
+  @keyframes ping { 0% { transform: scale(1); opacity: 0.7; } 80%, 100% { transform: scale(3); opacity: 0; } }
+
+  .hero__lead {
+    max-width: 680px; margin-top: 16px;
+    font-size: 1.125rem; line-height: 1.75rem; color: var(--muted);
+  }
+
+  .hero__stats {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 1px; margin-top: 40px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  @media (min-width: 768px) { .hero__stats { grid-template-columns: repeat(4, 1fr); } }
+  .hero__stat {
+    display: flex; flex-direction: column-reverse; gap: 4px;
+    padding: 24px; background: var(--surface);
+  }
+  .hero__stat dt { font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); }
+  .hero__stat dd {
+    font-family: var(--mono); font-weight: 500;
+    font-size: 1.875rem; line-height: 2.25rem; letter-spacing: -0.03em;
+  }
+</style>
+
+<script>
+  // Typewriter cycling through the roles. The first role is server rendered,
+  // so the line still reads correctly without JS or with reduced motion.
+  const el = document.querySelector<HTMLElement>('.hero__typed');
+  if (el && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const roles: string[] = JSON.parse(el.dataset.roles || '[]');
+    let i = 0;
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    (async () => {
+      for (;;) {
+        await sleep(2400);
+        const word = roles[i];
+        for (let n = word.length; n >= 0; n--) { el.textContent = word.slice(0, n); await sleep(28); }
+        i = (i + 1) % roles.length;
+        const nextWord = roles[i];
+        for (let n = 1; n <= nextWord.length; n++) { el.textContent = nextWord.slice(0, n); await sleep(55); }
+      }
+    })();
+  }
+</script>

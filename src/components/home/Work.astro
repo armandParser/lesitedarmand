@@ -1,0 +1,803 @@
+---
+import Icon from '../Icon.astro';
+import { site } from '../../i18n/site';
+import { projects, kindOrder, kindLabels, kindSingular, type Kind } from '../../data/projects';
+import { icons, type IconName } from '../../data/icons';
+import type { Lang } from '../../i18n/translations';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = site[lang].work;
+const m = site[lang].modal;
+const labels = kindLabels[lang];
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const url = (p: string) => base + p;
+
+const kindIcons: Record<Kind | 'all', IconName> = {
+  all: 'squares-four', saas: 'stack', webapp: 'browser', mobile: 'device-mobile', website: 'globe-simple', devtool: 'code',
+};
+const cats: (Kind | 'all')[] = ['all', ...kindOrder];
+const count = (k: Kind | 'all') => (k === 'all' ? projects.length : projects.filter((p) => p.kinds.includes(k)).length);
+
+// Lowercased, accent-free haystack for the search box.
+const fold = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const haystack = (p: (typeof projects)[number]) =>
+  fold([p.title, p.fr.desc, p.en.desc, p.fr.sector, p.en.sector, ...p.kinds.map((k) => labels[k]), p.source].join(' '));
+
+// Serializable payload for the detail sheet.
+const payload = projects.map((p) => ({
+  slug: p.slug,
+  title: p.title,
+  desc: p[lang].desc,
+  sector: p[lang].sector,
+  kinds: p.kinds.map((k) => labels[k]),
+  source: p.source,
+  tint: p.tint,
+  href: p.href,
+  stores: p.stores,
+  metrics: p.metrics?.[lang].items,
+  // Studio projects with no public site or store listing point to the Parser portfolio.
+  parserUrl: p.source === 'parser' && !p.href && !p.stores ? `https://parser-lab.com/${lang}/` : undefined,
+  github: p.github,
+  media:
+    p.media.kind === 'video'
+      ? { kind: 'video', src: url(p.media.src), poster: url(p.media.poster) }
+      : p.media.kind === 'image'
+        ? { kind: 'image', src: url(p.media.src), fit: p.media.fit }
+        : { kind: 'phones', framed: p.media.framed, screens: p.media.screens.map((s) => ({ src: url(s.src), alt: s.alt })) },
+}));
+
+const strings = {
+  live: m.live, github: m.github, parser: m.parser, copied: m.copied,
+  byParser: m.byParser, byIndependent: m.byIndependent, byEscenci: m.byEscenci, sector: m.sector, type: m.type, by: m.by, screens: m.screens,
+  source: t.source,
+  appStore: m.appStore, playStore: m.playStore,
+  icons: { apple: icons['apple-logo'], play: icons['google-play-logo'] },
+  count: { one: t.count(1), many: t.count(2).replace('2', '{n}') },
+};
+---
+<section class="section work" id="work" aria-labelledby="work-title">
+  <div class="container">
+    <header class="work__head reveal">
+      <span class="kicker">{t.kicker}</span>
+      <h2 class="h2" id="work-title">{t.title}</h2>
+      <p class="lede">{t.sub}</p>
+    </header>
+
+    <div class="work__sentinel" aria-hidden="true"></div>
+    <div class="work__bar">
+      <div class="work__tools">
+        <label class="search">
+          <Icon name="magnifying-glass" size={18} />
+          <span class="sr-only">{t.search}</span>
+          <input type="search" id="work-q" placeholder={t.searchShort} autocomplete="off" spellcheck="false" />
+          <button type="button" class="search__clear" id="work-q-clear" aria-label={t.clearSearch} hidden>
+            <Icon name="x" size={14} />
+          </button>
+        </label>
+        <div class="seg" role="radiogroup" aria-label={t.sourceLabel}>
+          {(['all', 'independent', 'parser'] as const).map((s) => (
+            <button type="button" role="radio" class="seg__btn" data-source={s} aria-checked={s === 'all' ? 'true' : 'false'}>
+              <span class="seg__full">{t.source[s]}</span><span class="seg__short" aria-hidden="true">{t.sourceShort[s]}</span>
+            </button>
+          ))}
+          <span class="seg__thumb" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <div class="cats" role="toolbar" aria-label={t.kicker}>
+        {cats.map((k) => (
+          <button type="button" class="cat" data-kind={k} aria-pressed={k === 'all' ? 'true' : 'false'}>
+            <Icon name={kindIcons[k]} size={24} />
+            <span class="cat__label">{labels[k]}<span class="cat__count" data-count-for={k}>{count(k)}</span></span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <p class="work__count" id="work-count" aria-live="polite">{t.count(projects.length)}</p>
+
+    <ul class="grid" id="work-grid">
+      {projects.map((p, i) => (
+        <li
+          class="card"
+          id={`card-${p.slug}`}
+          data-slug={p.slug}
+          data-kinds={p.kinds.join(' ')}
+          data-source={p.source}
+          data-text={haystack(p)}
+          style={`--tint:${p.tint}; view-transition-name: card-${p.slug};`}
+        >
+          <a class="card__link" href={`#${p.slug}`} aria-label={t.open(p.title)}>
+            <div class={`media media--${p.media.kind}${p.media.kind === 'image' ? ` media--${p.media.fit}` : ''}`}>
+              {p.media.kind === 'video' && (
+                <>
+                  <img src={url(p.media.poster)} alt="" loading={i < 8 ? 'eager' : 'lazy'} decoding="async" />
+                  <video data-src={url(p.media.src)} muted loop playsinline preload="none" disablepictureinpicture></video>
+                </>
+              )}
+              {p.media.kind === 'image' && (
+                <img src={url(p.media.src)} alt="" loading={i < 8 ? 'eager' : 'lazy'} decoding="async" />
+              )}
+              {p.media.kind === 'phones' && (
+                <div class={`fan${p.media.framed ? ' fan--framed' : ''}`}>
+                  {p.media.screens.slice(0, 3).map((s) => (
+                    <span class="fan__phone"><img src={url(s.src)} alt="" loading="lazy" decoding="async" /></span>
+                  ))}
+                </div>
+              )}
+              {p.source !== 'independent' && (
+                <span class="badge">
+                  <span class="badge__mark" aria-hidden="true">{p.source === 'parser' ? 'P' : 'E'}</span>{t.source[p.source]}
+                </span>
+              )}
+              <span class="kind-chip" aria-hidden="true"><Icon name={kindIcons[p.kinds[0]]} size={16} /></span>
+            </div>
+            <div class="card__body">
+              <div class="card__row">
+                <h3 class="card__title">{p.title}</h3>
+                <span class="card__kind">{kindSingular[lang][p.kinds[0]]}</span>
+              </div>
+              <p class="card__sector">{p[lang].sector}</p>
+              <p class="card__desc">{p[lang].desc}</p>
+              {p.metrics && (
+                <p class="card__metric"><Icon name="sparkle" size={14} />{p.metrics[lang].highlight}</p>
+              )}
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="empty" id="work-empty" hidden>
+      <div class="empty__icon"><Icon name="magnifying-glass" size={24} /></div>
+      <p class="empty__title">{t.empty}</p>
+      <button type="button" class="btn btn--ghost" id="work-reset">{t.reset}</button>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Project detail sheet ─── -->
+<dialog class="pm" id="pm" aria-labelledby="pm-title">
+  <div class="pm__sheet">
+    <div class="pm__bar">
+      <button type="button" class="icon-btn" id="pm-close" aria-label={m.close}><Icon name="x" size={18} /></button>
+      <div class="pm__bar-right">
+        <button type="button" class="icon-btn" id="pm-share" aria-label={m.share}><Icon name="copy" size={18} /></button>
+        <button type="button" class="icon-btn" id="pm-prev" aria-label={m.prev}><Icon name="caret-left" size={18} /></button>
+        <button type="button" class="icon-btn" id="pm-next" aria-label={m.next}><Icon name="caret-right" size={18} /></button>
+      </div>
+    </div>
+    <div class="pm__scroll" tabindex="-1" autofocus>
+      <div class="pm__media" id="pm-media"></div>
+      <div class="pm__body">
+        <div class="pm__main">
+          <div class="pm__chips" id="pm-chips"></div>
+          <h2 class="pm__title" id="pm-title"></h2>
+          <p class="pm__by" id="pm-by"></p>
+          <p class="pm__desc" id="pm-desc"></p>
+          <dl class="pm__metrics" id="pm-metrics" hidden></dl>
+          <div class="pm__actions" id="pm-actions"></div>
+        </div>
+        <dl class="pm__facts" id="pm-facts"></dl>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script type="application/json" id="work-data" set:html={JSON.stringify({ projects: payload, strings })}></script>
+
+<style>
+  .work__head { margin-bottom: 32px; }
+
+  /* ── Sticky filter bar ── */
+  .work__sentinel { height: 1px; }
+  .work__bar {
+    position: sticky; top: 72px; z-index: 30;
+    display: flex; flex-direction: column; gap: 12px;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: 12px var(--gutter) 0;
+    background: var(--bg);
+    transition: top 600ms var(--ease), box-shadow 300ms var(--ease), background-color 400ms var(--ease);
+  }
+  @media (min-width: 768px) { .work__bar { top: 80px; } }
+  :global(html.nav-hidden) .work__bar { top: 0; }
+  .work__bar.is-stuck { box-shadow: 0 1px 0 var(--border), 0 8px 16px -12px rgb(0 0 0 / 0.2); }
+
+  @media (min-width: 1360px) {
+    .work__bar { flex-direction: row-reverse; align-items: center; gap: 24px; padding-top: 8px; }
+    .work__tools { flex: none; }
+    .cats { flex: 1; min-width: 0; }
+  }
+
+  .work__tools { display: flex; gap: 8px; align-items: center; }
+
+  .search {
+    position: relative; flex: 1; min-width: 0;
+    display: flex; align-items: center; gap: 8px;
+    height: 48px; padding: 0 12px 0 16px;
+    border-radius: 9999px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    box-shadow: var(--shadow-sm);
+    color: var(--muted);
+    transition: box-shadow 300ms var(--ease), border-color 300ms var(--ease);
+  }
+  .search:focus-within { box-shadow: var(--shadow-md); border-color: var(--text); }
+  @media (min-width: 1360px) { .search { width: 256px; flex: none; height: 40px; } }
+  .search input {
+    flex: 1; min-width: 0; height: 100%;
+    border: 0; outline: 0; background: none; color: var(--text);
+    font: inherit; font-size: 0.875rem; line-height: 1.25rem;
+  }
+  .search input::placeholder { color: var(--muted); }
+  .search input::-webkit-search-cancel-button { display: none; }
+  .search__clear {
+    display: grid; place-items: center; width: 24px; height: 24px; border-radius: 9999px;
+    background: var(--surface-3); color: var(--text);
+  }
+  .search__clear[hidden] { display: none; }
+
+  /* Segmented control with a sliding thumb */
+  .seg {
+    position: relative; isolation: isolate; flex: none;
+    display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+    padding: 4px; height: 48px;
+    border-radius: 9999px; background: var(--surface-2);
+  }
+  @media (min-width: 1360px) { .seg { height: 40px; } }
+  .seg__btn {
+    position: relative; z-index: 1;
+    padding: 0 12px; border-radius: 9999px;
+    font-size: 0.875rem; line-height: 1.25rem; font-weight: 500;
+    color: var(--muted);
+    transition: color 300ms var(--ease);
+  }
+  .seg__btn[aria-checked='true'] { color: var(--text); }
+  .seg__thumb {
+    position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px;
+    width: calc((100% - 8px) / 3);
+    border-radius: 9999px; background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    transform: translateX(calc(var(--seg-i, 0) * 100%));
+    transition: transform 500ms var(--ease);
+  }
+  .seg__short { display: none; }
+  @media (max-width: 639px) {
+    .seg__btn { padding: 0 12px; }
+    .seg__full { display: none; }
+    .seg__short { display: inline; }
+  }
+
+  /* Category tabs, Airbnb style: icon over label, underline when active */
+  .cats {
+    display: flex; gap: 32px;
+    overflow-x: auto; scrollbar-width: none;
+    margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter);
+    mask-image: linear-gradient(90deg, transparent 0, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent 100%);
+  }
+  @media (min-width: 1360px) { .cats { margin-inline: 0; padding-inline: 0; mask-image: none; } }
+  .cats::-webkit-scrollbar { display: none; }
+  .cat {
+    position: relative; flex: none;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 4px 0 12px;
+    color: var(--muted);
+    transition: color 300ms var(--ease);
+  }
+  .cat::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px;
+    background: currentColor; transform: scaleX(0);
+    transition: transform 500ms var(--ease);
+  }
+  .cat:hover { color: var(--text); }
+  .cat:hover::after { transform: scaleX(0.5); background: var(--border-strong); }
+  .cat[aria-pressed='true'] { color: var(--text); }
+  .cat[aria-pressed='true']::after { transform: scaleX(1); background: var(--text); }
+  .cat:active svg { transform: scale(0.92); }
+  .cat svg { transition: transform 300ms var(--ease); }
+  .cat__label { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; line-height: 1rem; font-weight: 600; white-space: nowrap; }
+  .cat__count {
+    font-family: var(--mono); font-size: 0.75rem; line-height: 1rem; font-weight: 500;
+    color: var(--faint);
+  }
+
+  .work__count { margin: 24px 0 16px; font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); font-weight: 500; }
+
+  /* ── Grid ── */
+  .grid {
+    list-style: none;
+    display: grid; gap: 40px 24px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 560px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 960px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1280px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .card[hidden] { display: none; }
+  .card.is-pop { animation: card-pop 600ms var(--ease) both; }
+  @keyframes card-pop { from { opacity: 0; transform: translateY(16px) scale(0.98); } }
+
+  .card__link { display: block; text-decoration: none; color: inherit; border-radius: 16px; }
+  .card__link:focus-visible { outline-offset: 4px; border-radius: 16px; }
+
+  .media {
+    position: relative; overflow: hidden;
+    aspect-ratio: 3 / 2;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--tint) 12%, var(--surface-2));
+    transition: box-shadow 500ms var(--ease);
+  }
+  .media > img, .media > video {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    transition: transform 700ms var(--ease), opacity 400ms var(--ease);
+  }
+  .media > video { opacity: 0; }
+  .media.is-playing > video { opacity: 1; }
+  .media--contain > img { object-fit: contain; padding: 16px; filter: drop-shadow(0 8px 16px rgb(0 0 0 / 0.15)); }
+  .card__link:hover .media { box-shadow: var(--shadow-lg); }
+  .card__link:hover .media > img, .card__link:hover .media > video { transform: scale(1.04); }
+  .card__link:active .media { transform: scale(0.99); }
+
+  /* Fanned phone screenshots */
+  .fan { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding-top: 16px; }
+  .fan__phone {
+    width: 30%; aspect-ratio: 9 / 19.5; margin-inline: -4%;
+    transform: translateY(18%) rotate(var(--r, 0deg));
+    transition: transform 700ms var(--ease);
+  }
+  .fan__phone:nth-child(1) { --r: -8deg; }
+  .fan__phone:nth-child(2) { --r: 0deg; z-index: 1; transform: translateY(8%); }
+  .fan__phone:nth-child(3) { --r: 8deg; }
+  .fan__phone img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 16px rgb(0 0 0 / 0.25)); }
+  .fan--framed .fan__phone {
+    padding: 3px; border-radius: 16px; background: #0a0a0a;
+    box-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.5);
+  }
+  .fan--framed .fan__phone img { object-fit: cover; border-radius: 13px; filter: none; }
+  .card__link:hover .fan__phone:nth-child(1) { transform: translateY(12%) rotate(-12deg) translateX(-8%); }
+  .card__link:hover .fan__phone:nth-child(2) { transform: translateY(2%); }
+  .card__link:hover .fan__phone:nth-child(3) { transform: translateY(12%) rotate(12deg) translateX(8%); }
+
+  .badge {
+    position: absolute; top: 12px; left: 12px; z-index: 2;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 12px 4px 4px; border-radius: 9999px;
+    background: rgb(255 255 255 / 0.92); color: #222;
+    font-size: 0.75rem; line-height: 1rem; font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  }
+  .badge__mark {
+    display: grid; place-items: center; width: 20px; height: 20px; border-radius: 9999px;
+    background: #111; color: #fff; font-size: 0.75rem; line-height: 1rem; font-weight: 700;
+  }
+  .kind-chip {
+    position: absolute; top: 12px; right: 12px; z-index: 2;
+    display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9999px;
+    background: rgb(255 255 255 / 0.92); color: #222; box-shadow: var(--shadow-sm);
+  }
+
+  .card__body { padding-top: 12px; }
+  .card__row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .card__title { font-size: 1rem; line-height: 1.5rem; font-weight: 600; letter-spacing: -0.01em; }
+  .card__kind { flex: none; font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); }
+  .card__sector { font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); }
+  .card__desc {
+    margin-top: 4px; font-size: 0.875rem; line-height: 1.25rem; color: var(--text);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+
+  /* ── Empty state ── */
+  .empty {
+    display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center;
+    padding: 64px 24px; border: 1px dashed var(--border-strong); border-radius: 24px;
+  }
+  .empty[hidden] { display: none; }
+  .empty__icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 9999px; background: var(--surface-2); color: var(--muted); }
+  .empty__title { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; }
+
+  /* ── Detail sheet ── */
+  .pm {
+    position: fixed; inset: 0; margin: auto;
+    width: 100%; max-width: 100%; height: 100%; max-height: 100%;
+    padding: 0; border: 0; background: transparent; color: var(--text);
+    overflow: hidden;
+  }
+  .pm::backdrop { background: rgb(0 0 0 / 0.55); opacity: 0; transition: opacity 400ms var(--ease); }
+  .pm.is-open::backdrop { opacity: 1; }
+
+  .pm__sheet {
+    position: absolute; left: 0; right: 0; bottom: 0; top: 24px;
+    display: flex; flex-direction: column;
+    background: var(--surface);
+    border-radius: 24px 24px 0 0;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(100%);
+    transition: transform 600ms var(--ease);
+  }
+  .pm.is-open .pm__sheet { transform: none; }
+  @media (min-width: 768px) {
+    .pm__sheet {
+      inset: 40px; margin-inline: auto; max-width: 1024px;
+      border-radius: 24px;
+      transform: translateY(48px) scale(0.98); opacity: 0;
+      transition: transform 600ms var(--ease), opacity 400ms var(--ease);
+    }
+    .pm.is-open .pm__sheet { transform: none; opacity: 1; }
+  }
+
+  .pm__bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; }
+  .pm__bar-right { display: flex; gap: 4px; }
+  .pm__scroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 0 16px 32px; outline: none; }
+  @media (min-width: 768px) { .pm__scroll { padding: 0 32px 40px; } }
+
+  /* Media stage: media is fitted and centered within --stage-h; the stage shrinks to hug
+     landscape media and keeps the full height for phone screenshots. */
+  .pm__media {
+    --stage-h: clamp(240px, 40vh, 352px);
+    --pad: 24px;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    padding: var(--pad);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--tint, #888) 12%, var(--surface-2));
+  }
+  @media (min-width: 768px) { .pm__media { --stage-h: clamp(288px, 48vh, 448px); --pad: 32px; } }
+
+  /* Screenshots and transparent mockups keep their own ratio. */
+  :global(.pm__media > img) {
+    display: block; width: auto; height: auto; max-width: 100%; max-height: calc(var(--stage-h) - var(--pad) * 2);
+    object-fit: contain;
+    filter: drop-shadow(0 16px 32px rgb(0 0 0 / 0.18));
+  }
+  :global(.pm__media > img.is-shot) { border-radius: 12px; filter: none; box-shadow: var(--shadow-lg); }
+
+  /* Videos: the frame takes the poster's ratio (--ar, set from JS) and the largest size that fits. */
+  :global(.pm-frame) {
+    width: min(100%, calc((var(--stage-h) - var(--pad) * 2) * var(--ar, 1.7778)));
+    aspect-ratio: var(--ar, 1.7778);
+    border-radius: 12px; overflow: hidden;
+    box-shadow: var(--shadow-lg); background: #000;
+  }
+  :global(.pm-frame video) { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Phones: a centered row sized by height, scrolling sideways only when it overflows. */
+  .pm__media.is-phones { padding: 0; height: var(--stage-h); }
+  :global(.pm-phones) {
+    display: flex; align-items: center; justify-content: safe center; gap: 24px;
+    width: 100%; height: 100%;
+    padding: var(--pad);
+    overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  }
+  :global(.pm-phones::-webkit-scrollbar) { display: none; }
+  :global(.pm-phones > figure) { flex: none; height: min(100%, 368px); scroll-snap-align: center; }
+  :global(.pm-phones img) { height: 100%; width: auto; filter: drop-shadow(0 16px 24px rgb(0 0 0 / 0.25)); }
+  :global(.pm-phones.is-framed figure) { padding: 6px; border-radius: 32px; background: #0a0a0a; box-shadow: 0 24px 48px -16px rgb(0 0 0 / 0.5); }
+  :global(.pm-phones.is-framed img) { aspect-ratio: 9 / 19.5; object-fit: cover; border-radius: 26px; filter: none; }
+
+  /* Store badges */
+  :global(.store) {
+    display: inline-flex; align-items: center; gap: 8px;
+    min-height: 48px; padding: 8px 16px 8px 12px; border-radius: 12px;
+    background: #000; color: #fff; text-decoration: none;
+    border: 1px solid #000;
+    transition: transform 300ms var(--ease), box-shadow 300ms var(--ease);
+  }
+  :global([data-theme='dark'] .store) { border-color: #3d3d3d; }
+  :global(.store:hover) { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  :global(.store:active) { transform: scale(0.98); }
+  :global(.store span) { display: flex; flex-direction: column; text-align: left; }
+  :global(.store small) { font-size: 0.75rem; line-height: 1rem; opacity: 0.8; }
+  :global(.store b) { font-size: 1rem; line-height: 1.25rem; font-weight: 600; }
+
+  .pm__body { display: grid; gap: 32px; margin-top: 24px; }
+  @media (min-width: 768px) { .pm__body { grid-template-columns: 1fr 288px; gap: 48px; margin-top: 32px; } }
+
+  .pm__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  :global(.pm-chip) {
+    padding: 4px 12px; border-radius: 9999px;
+    background: var(--surface-2); color: var(--text);
+    font-size: 0.75rem; line-height: 1rem; font-weight: 600;
+  }
+  .pm__title { margin-top: 12px; font-size: 1.875rem; line-height: 2.25rem; letter-spacing: -0.02em; }
+  .pm__by { margin-top: 4px; font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); }
+  .pm__desc { margin-top: 16px; font-size: 1.125rem; line-height: 1.75rem; }
+  .card__metric {
+    display: inline-flex; align-items: center; gap: 4px; margin-top: 8px;
+    font-size: 0.75rem; line-height: 1rem; font-weight: 600; color: var(--ok);
+  }
+
+  .pm__metrics {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 1px; margin-top: 24px;
+    background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+  }
+  .pm__metrics[hidden] { display: none; }
+  :global(.pm__metrics > div) { display: flex; flex-direction: column-reverse; gap: 4px; padding: 16px; background: var(--surface); }
+  :global(.pm__metrics dt) { font-size: 0.75rem; line-height: 1rem; color: var(--muted); }
+  :global(.pm__metrics dd) { font-family: var(--mono); font-size: 1.5rem; line-height: 2rem; font-weight: 500; letter-spacing: -0.02em; }
+  .pm__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .pm__actions:empty { display: none; }
+
+  .pm__facts {
+    align-self: start;
+    display: grid; gap: 1px;
+    border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+    background: var(--border);
+  }
+  :global(.pm__facts > div) { display: flex; justify-content: space-between; gap: 16px; padding: 12px 16px; background: var(--surface); font-size: 0.875rem; line-height: 1.25rem; }
+  :global(.pm__facts dt) { color: var(--muted); }
+  :global(.pm__facts dd) { font-weight: 600; text-align: right; }
+</style>
+
+<script>
+  import { toast } from '../../scripts/toast';
+
+  type Media =
+    | { kind: 'video'; src: string; poster: string }
+    | { kind: 'image'; src: string; fit: 'cover' | 'contain' }
+    | { kind: 'phones'; framed: boolean; screens: { src: string; alt: string }[] };
+  type P = {
+    slug: string; title: string; desc: string; sector: string; kinds: string[];
+    source: 'independent' | 'parser' | 'escenci'; tint: string; href?: string; github?: string; media: Media;
+    stores?: { appStore?: string; playStore?: string }; parserUrl?: string;
+    metrics?: { value: string; label: string }[];
+  };
+
+  const data = JSON.parse(document.getElementById('work-data')!.textContent!);
+  const list: P[] = data.projects;
+  const S = data.strings;
+  const bySlug = new Map(list.map((p) => [p.slug, p]));
+
+  const grid = document.getElementById('work-grid')!;
+  const cards = Array.from(grid.querySelectorAll<HTMLLIElement>('.card'));
+  const countEl = document.getElementById('work-count')!;
+  const emptyEl = document.getElementById('work-empty')!;
+  const q = document.getElementById('work-q') as HTMLInputElement;
+  const qClear = document.getElementById('work-q-clear')!;
+  const catBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.cat'));
+  const segBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.seg__btn'));
+  const seg = document.querySelector<HTMLElement>('.seg')!;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const fold = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+  const state = { kind: 'all', source: 'all', q: '' };
+
+  const matches = (c: HTMLElement, kind = state.kind) =>
+    (kind === 'all' || c.dataset.kinds!.split(' ').includes(kind)) &&
+    (state.source === 'all' || c.dataset.source === state.source) &&
+    (!state.q || state.q.split(/\s+/).every((w) => c.dataset.text!.includes(w)));
+
+  function render() {
+    let n = 0;
+    cards.forEach((c) => {
+      const show = matches(c);
+      if (show && c.hidden) { c.classList.remove('is-pop'); void c.offsetWidth; c.classList.add('is-pop'); }
+      c.hidden = !show;
+      if (show) n++;
+    });
+    countEl.textContent = n === 1 ? S.count.one : S.count.many.replace('{n}', String(n));
+    emptyEl.hidden = n > 0;
+
+    catBtns.forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.kind === state.kind));
+      const k = b.dataset.kind!;
+      b.querySelector('.cat__count')!.textContent = String(cards.filter((c) => matches(c, k)).length);
+    });
+    segBtns.forEach((b, i) => {
+      const on = b.dataset.source === state.source;
+      b.setAttribute('aria-checked', String(on));
+      if (on) seg.style.setProperty('--seg-i', String(i));
+    });
+    qClear.hidden = !q.value;
+
+    const params = new URLSearchParams();
+    if (state.kind !== 'all') params.set('type', state.kind);
+    if (state.source !== 'all') params.set('by', state.source);
+    if (state.q) params.set('q', q.value.trim());
+    const qs = params.toString();
+    history.replaceState(history.state, '', `${location.pathname}${qs ? `?${qs}` : ''}${location.hash}`);
+  }
+
+  // Animate the reflow with the View Transitions API where available.
+  function update(animate = true) {
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
+    if (animate && !reduce && doc.startViewTransition) doc.startViewTransition(render);
+    else render();
+  }
+
+  catBtns.forEach((b) => b.addEventListener('click', () => {
+    state.kind = b.dataset.kind!;
+    b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+    update();
+  }));
+  segBtns.forEach((b) => b.addEventListener('click', () => { state.source = b.dataset.source!; update(); }));
+  seg.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    const i = segBtns.findIndex((b) => b.dataset.source === state.source);
+    const next = segBtns[(i + (e.key === 'ArrowRight' ? 1 : segBtns.length - 1)) % segBtns.length];
+    next.focus(); next.click();
+  });
+
+  let qTimer: number | undefined;
+  q.addEventListener('input', () => {
+    clearTimeout(qTimer);
+    qTimer = window.setTimeout(() => { state.q = fold(q.value); update(false); }, 120);
+  });
+  qClear.addEventListener('click', () => { q.value = ''; state.q = ''; update(false); q.focus(); });
+  document.getElementById('work-reset')!.addEventListener('click', () => {
+    q.value = ''; Object.assign(state, { kind: 'all', source: 'all', q: '' }); update();
+  });
+
+  // Restore filters from the URL (shareable links like ?type=saas&by=parser).
+  {
+    const params = new URLSearchParams(location.search);
+    const type = params.get('type');
+    const by = params.get('by');
+    if (type && catBtns.some((b) => b.dataset.kind === type)) state.kind = type;
+    if (by && segBtns.some((b) => b.dataset.source === by)) state.source = by;
+    if (params.get('q')) { q.value = params.get('q')!; state.q = fold(q.value); }
+    render();
+  }
+
+  // Shadow under the filter bar once it sticks.
+  const bar = document.querySelector<HTMLElement>('.work__bar')!;
+  new IntersectionObserver(([e]) => bar.classList.toggle('is-stuck', !e.isIntersecting && e.boundingClientRect.top < 0))
+    .observe(document.querySelector('.work__sentinel')!);
+
+  // Hover previews: load and play the video only when a mouse is over the card.
+  cards.forEach((c) => {
+    const video = c.querySelector('video');
+    if (!video) return;
+    const media = video.parentElement!;
+    c.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      if (!video.src) video.src = video.dataset.src!;
+      video.play().then(() => media.classList.add('is-playing')).catch(() => {});
+    });
+    c.addEventListener('pointerleave', () => { video.pause(); media.classList.remove('is-playing'); });
+  });
+
+  /* ── Detail sheet ── */
+  const dlg = document.getElementById('pm') as HTMLDialogElement;
+  const $ = (id: string) => document.getElementById(id)!;
+  const mediaEl = $('pm-media');
+  let current = '';
+  let openedFromPage = false;
+  // Scroll position to return to on close. Closing steps back through history,
+  // and Safari re-scrolls to that entry's anchor (e.g. #contact), so restore it ourselves.
+  let returnY: number | null = null;
+
+  const esc = (s: string) => s.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]!);
+  const ext = (href: string, label: string, primary = false) =>
+    `<a class="btn ${primary ? 'btn--primary' : 'btn--ghost'}" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)}<svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"/></svg></a>`;
+
+  const store = (href: string, icon: string, copy: { top: string; name: string }) =>
+    `<a class="store" href="${esc(href)}" target="_blank" rel="noopener noreferrer"><svg width="24" height="24" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">${icon}</svg><span><small>${esc(copy.top)}</small><b>${esc(copy.name)}</b></span></a>`;
+
+  function fill(p: P) {
+    current = p.slug;
+    dlg.style.setProperty('--tint', p.tint);
+    mediaEl.className = 'pm__media';
+    const m = p.media;
+    if (m.kind === 'video') {
+      mediaEl.innerHTML = `<div class="pm-frame"><video src="${esc(m.src)}" poster="${esc(m.poster)}" autoplay muted loop playsinline disablepictureinpicture></video></div>`;
+      // Size the frame to the poster's ratio (already cached from the card).
+      const frame = mediaEl.firstElementChild as HTMLElement;
+      const probe = new Image();
+      probe.onload = () => { if (current === p.slug) frame.style.setProperty('--ar', String(probe.naturalWidth / probe.naturalHeight)); };
+      probe.src = m.poster;
+    } else if (m.kind === 'image') {
+      mediaEl.innerHTML = `<img src="${esc(m.src)}" alt="${esc(p.title)}"${m.fit === 'cover' ? ' class="is-shot"' : ''} />`;
+    } else {
+      mediaEl.classList.add('is-phones');
+      mediaEl.innerHTML = `<div class="pm-phones${m.framed ? ' is-framed' : ''}" tabindex="0" aria-label="${esc(S.screens)}">${m.screens
+        .map((s) => `<figure><img src="${esc(s.src)}" alt="${esc(s.alt)}" /></figure>`).join('')}</div>`;
+    }
+    $('pm-chips').innerHTML = p.kinds.map((k) => `<span class="pm-chip">${esc(k)}</span>`).join('');
+    $('pm-title').textContent = p.title;
+    $('pm-by').textContent = { parser: S.byParser, independent: S.byIndependent, escenci: S.byEscenci }[p.source];
+    $('pm-desc').textContent = p.desc;
+    const metricsEl = $('pm-metrics');
+    metricsEl.hidden = !p.metrics;
+    metricsEl.innerHTML = (p.metrics ?? []).map((m) => `<div><dt>${esc(m.label)}</dt><dd>${esc(m.value)}</dd></div>`).join('');
+    const actions: string[] = [];
+    if (p.href) actions.push(ext(p.href, S.live, true));
+    if (p.stores?.appStore) actions.push(store(p.stores.appStore, S.icons.apple, S.appStore));
+    if (p.stores?.playStore) actions.push(store(p.stores.playStore, S.icons.play, S.playStore));
+    if (p.github) actions.push(ext(p.github, S.github));
+    if (p.parserUrl) actions.push(ext(p.parserUrl, S.parser, true));
+    $('pm-actions').innerHTML = actions.join('');
+    $('pm-facts').innerHTML = [
+      [S.sector, p.sector], [S.type, p.kinds.join(', ')], [S.by, S.source[p.source]],
+    ].map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('');
+    (dlg.querySelector('.pm__scroll') as HTMLElement).scrollTop = 0;
+
+    const vis = visible();
+    const i = vis.indexOf(p.slug);
+    ($('pm-prev') as HTMLButtonElement).disabled = vis.length < 2 || i === -1;
+    ($('pm-next') as HTMLButtonElement).disabled = vis.length < 2 || i === -1;
+  }
+
+  const visible = () => cards.filter((c) => !c.hidden).map((c) => c.dataset.slug!);
+
+  function open(slug: string) {
+    const p = bySlug.get(slug);
+    if (!p) return;
+    fill(p);
+    if (!dlg.open) {
+      if (returnY === null) returnY = scrollY;
+      dlg.showModal();
+      document.documentElement.style.overflow = 'hidden';
+      requestAnimationFrame(() => requestAnimationFrame(() => dlg.classList.add('is-open')));
+    }
+  }
+
+  function close() {
+    if (!dlg.open) return;
+    dlg.classList.remove('is-open');
+    document.documentElement.style.overflow = '';
+    const y = returnY;
+    returnY = null;
+    if (y !== null) {
+      const restore = () => scrollTo({ top: y, behavior: 'instant' });
+      restore();
+      requestAnimationFrame(restore);
+    }
+    const card = document.getElementById(`card-${current}`)?.querySelector('a');
+    setTimeout(() => {
+      dlg.close();
+      mediaEl.innerHTML = '';
+      card?.focus({ preventScroll: true });
+    }, reduce ? 0 : 400);
+  }
+
+  // Leaving the sheet: step back through history if the sheet pushed an entry,
+  // otherwise just drop the hash.
+  function dismiss() {
+    if (openedFromPage && location.hash.slice(1) === current) history.back();
+    else { history.replaceState(history.state, '', location.pathname + location.search); close(); }
+  }
+
+  function step(dir: number) {
+    const vis = visible();
+    const i = vis.indexOf(current);
+    if (i === -1 || vis.length < 2) return;
+    const next = vis[(i + dir + vis.length) % vis.length];
+    history.replaceState(history.state, '', `${location.pathname}${location.search}#${next}`);
+    fill(bySlug.get(next)!);
+  }
+
+  // Card links and expertise links point at "#slug": routing goes through the hash,
+  // so the back button closes the sheet on mobile.
+  document.addEventListener('click', (e) => {
+    const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+    if (a && bySlug.has(a.hash.slice(1)) && !e.metaKey && !e.ctrlKey) {
+      openedFromPage = true;
+      if (!dlg.open) returnY = scrollY;
+    }
+  });
+  addEventListener('hashchange', () => {
+    const slug = location.hash.slice(1);
+    if (bySlug.has(slug)) open(slug);
+    else close();
+  });
+  if (bySlug.has(location.hash.slice(1))) open(location.hash.slice(1));
+
+  $('pm-close').addEventListener('click', dismiss);
+  $('pm-prev').addEventListener('click', () => step(-1));
+  $('pm-next').addEventListener('click', () => step(1));
+  $('pm-share').addEventListener('click', () => {
+    navigator.clipboard?.writeText(location.href).then(() => toast(S.copied));
+  });
+  dlg.addEventListener('cancel', (e) => { e.preventDefault(); dismiss(); });
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dismiss(); });
+  dlg.addEventListener('keydown', (e) => {
+    if ((e.target as Element).closest('input, .pm-phones')) return;
+    if (e.key === 'ArrowLeft') step(-1);
+    if (e.key === 'ArrowRight') step(1);
+  });
+</script>

@@ -1,0 +1,61 @@
+---
+import Icon from '../Icon.astro';
+import { site } from '../../i18n/site';
+import type { Lang } from '../../i18n/translations';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = site[lang].contact;
+const email = 'armandcollier24@gmail.com';
+---
+<section class="section" id="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="cta reveal">
+      <h2 class="cta__title" id="contact-title">{t.title}</h2>
+      <p class="cta__sub">{t.sub}</p>
+      <div class="cta__actions">
+        <a class="btn btn--lg cta__primary" href={`mailto:${email}`}>
+          <Icon name="envelope-simple" size={20} />
+          {t.email}
+        </a>
+        <button type="button" class="btn btn--lg cta__ghost" data-copy={email} data-copied={t.copied}>
+          <Icon name="copy" size={20} />
+          {t.copy}
+        </button>
+        <a class="btn btn--lg cta__ghost" href="https://github.com/armandParser" target="_blank" rel="noopener noreferrer">
+          <Icon name="github-logo" size={20} />
+          GitHub
+        </a>
+      </div>
+      <p class="cta__mail">{email}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding: 64px 24px; border-radius: 32px; text-align: center;
+    background: #181818; color: #f2f2f2;
+  }
+  [data-theme='dark'] .cta { background: #272727; }
+  @media (min-width: 768px) { .cta { padding: 96px 48px; } }
+
+  .cta__title {
+    max-width: 680px; margin-inline: auto; white-space: pre-line;
+    font-size: 2.25rem; line-height: 2.5rem; letter-spacing: -0.03em; font-weight: 600;
+    background: linear-gradient(90deg, #ffffff, #9b9b9b);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  @media (min-width: 768px) { .cta__title { font-size: 3rem; line-height: 1; } }
+  .cta__sub { max-width: 480px; margin: 16px auto 0; color: #a3a3a3; font-size: 1.125rem; line-height: 1.75rem; }
+
+  .cta__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 32px; }
+  .cta__primary { background: #ffffff; color: #111111; }
+  .cta__primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgb(255 255 255 / 0.15); }
+  .cta__ghost { border: 1px solid #3d3d3d; color: #f2f2f2; }
+  .cta__ghost:hover { background: #313131; }
+  .cta__mail { margin-top: 24px; font-family: var(--mono); font-size: 0.875rem; line-height: 1.25rem; color: #777777; }
+</style>
