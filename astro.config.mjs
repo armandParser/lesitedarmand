@@ -1,8 +1,8 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://armandParser.github.io',
-  base: '/lesitedarmand',
+  site: 'https://madebyarm.app',
+  base: '/',
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'viewport',
