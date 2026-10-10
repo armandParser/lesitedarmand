@@ -151,7 +151,7 @@ const parserProjects: Project[] = [
 const ownProjects: Project[] = [
   {
     slug: 'restoration-monitor', title: 'Restoration Monitor', kinds: ['webapp'], source: 'independent', tint: '#65a30d',
-    href: 'https://restoration-monitor.armandcollier24.workers.dev/',
+    href: 'https://greenwatching.madebyarm.app',
     media: { kind: 'image', src: 'previews/restoration-monitor.webp', fit: 'cover' },
     fr: {
       desc: "Des preuves satellite pour la restauration des terres : tracez le périmètre d'un projet, obtenez une image sans nuages pour chaque année depuis 1985 et comparez la zone à ses alentours.",
