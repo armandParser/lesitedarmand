@@ -10,10 +10,12 @@ interface Props {
 const { lang } = Astro.props;
 const t = site[lang].contact;
 const email = 'armandcollier24@gmail.com';
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 <section class="section" id="contact" aria-labelledby="contact-title">
   <div class="container">
     <div class="cta reveal">
+      <img class="cta__bg" src={`${base}previews/ascii-banner.webp`} alt="" width="1800" height="945" loading="lazy" decoding="async" />
       <h2 class="cta__title" id="contact-title">{t.title}</h2>
       <p class="cta__sub">{t.sub}</p>
       <div class="cta__actions">
@@ -37,10 +39,24 @@ const email = 'armandcollier24@gmail.com';
 
 <style>
   .cta {
+    position: relative; isolation: isolate; overflow: hidden;
     padding: 64px 24px; border-radius: 32px; text-align: center;
-    background: #181818; color: #f2f2f2;
+    background: #0b0f1a; color: #f2f2f2;
   }
-  [data-theme='dark'] .cta { background: #272727; }
+  /* The ASCII sky, a bit taller than the card and pinned to the top so the
+     dark sky sits behind the text and the clouds peek in along the bottom;
+     a soft scrim keeps the text readable. */
+  .cta__bg {
+    position: absolute; inset: 0 0 auto; z-index: -2;
+    width: 100%; height: 140%; object-fit: cover; object-position: center top;
+    pointer-events: none;
+  }
+  /* The stacked mobile card is tall, so keep the clouds below the buttons. */
+  @media (max-width: 639px) { .cta__bg { height: 175%; } }
+  .cta::before {
+    content: ''; position: absolute; inset: 0; z-index: -1;
+    background: radial-gradient(ellipse 60% 70% at 50% 50%, rgb(5 8 15 / 0.55), transparent 75%);
+  }
   @media (min-width: 768px) { .cta { padding: 96px 48px; } }
 
   .cta__title {
@@ -57,5 +73,5 @@ const email = 'armandcollier24@gmail.com';
   .cta__primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgb(255 255 255 / 0.15); }
   .cta__ghost { border: 1px solid #3d3d3d; color: #f2f2f2; }
   .cta__ghost:hover { background: #313131; }
-  .cta__mail { margin-top: 24px; font-family: var(--mono); font-size: 0.875rem; line-height: 1.25rem; color: #777777; }
+  .cta__mail { margin-top: 24px; font-family: var(--mono); font-size: 0.875rem; line-height: 1.25rem; color: #a3a3a3; }
 </style>
