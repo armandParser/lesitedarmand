@@ -2,6 +2,7 @@
 import Icon from '../components/Icon.astro';
 import { site } from '../i18n/site';
 import type { Lang } from '../i18n/translations';
+import { jsonLd, profile } from '../data/profile';
 
 interface Props {
   lang: Lang;
@@ -14,6 +15,21 @@ const altHref = lang === 'fr' ? `${base}en/` : base;
 const origin = Astro.site ? Astro.site.origin : '';
 const canonical = `${origin}${lang === 'fr' ? base : `${base}en/`}`;
 const ogImage = `${origin}${base}og.jpg`;
+const ld = JSON.stringify(jsonLd(lang, origin, canonical)).replace(/</g, '\\u003c');
+const fontFaces = `
+  @font-face { font-family: 'Geist'; font-style: normal; font-weight: 400 700; font-display: swap;
+    src: url('${base}fonts/geist-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Geist'; font-style: normal; font-weight: 400 700; font-display: swap;
+    src: url('${base}fonts/geist-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  @font-face { font-family: 'Geist Mono'; font-style: normal; font-weight: 500; font-display: swap;
+    src: url('${base}fonts/geist-mono-500-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Geist Mono'; font-style: normal; font-weight: 500; font-display: swap;
+    src: url('${base}fonts/geist-mono-500-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+`;
 
 const navLinks = [
   { id: 'work', label: t.nav.work },
@@ -32,6 +48,9 @@ const navLinks = [
   <link rel="canonical" href={canonical} />
   <link rel="alternate" hreflang="fr" href={`${origin}${base}`} />
   <link rel="alternate" hreflang="en" href={`${origin}${base}en/`} />
+  <link rel="alternate" hreflang="x-default" href={`${origin}${base}`} />
+  <link rel="alternate" type="text/plain" title="llms.txt" href={`${base}llms.txt`} />
+  <meta name="author" content={profile.name} />
   <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#181818" media="(prefers-color-scheme: dark)" />
@@ -40,12 +59,23 @@ const navLinks = [
   <meta property="og:description" content={t.description} />
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content={t.title} />
+  <meta property="og:site_name" content={profile.name} />
   <meta property="og:locale" content={lang === 'fr' ? 'fr_FR' : 'en_US'} />
+  <meta property="og:locale:alternate" content={lang === 'fr' ? 'en_US' : 'fr_FR'} />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={t.title} />
+  <meta name="twitter:description" content={t.description} />
+  <meta name="twitter:image" content={ogImage} />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet" />
+  <!-- Self-hosted Geist (latin + latin-ext); preload the latin files every page needs. -->
+  <link rel="preload" href={`${base}fonts/geist-latin.woff2`} as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href={`${base}fonts/geist-mono-500-latin.woff2`} as="font" type="font/woff2" crossorigin />
+  <style set:html={fontFaces}></style>
+
+  <script type="application/ld+json" set:html={ld}></script>
 
   <!-- Theme before first paint: saved choice, else OS preference. -->
   <script is:inline>
@@ -261,7 +291,9 @@ const navLinks = [
     <div class="container footer__inner">
       <span>© {new Date().getFullYear()} {t.footer.rights}</span>
       <div class="footer__links">
-        <a href="https://github.com/armandParser" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href={profile.links.github} target="_blank" rel="me noopener noreferrer">GitHub</a>
+        <a href={profile.links.linkedin} target="_blank" rel="me noopener noreferrer">LinkedIn</a>
+        <a href={profile.links.malt} target="_blank" rel="me noopener noreferrer">Malt</a>
         <a href="https://parser-lab.com" target="_blank" rel="noopener noreferrer">Parser</a>
         <a href={altHref}>{t.nav.lang}</a>
         <a href="#top">{t.footer.top}</a>

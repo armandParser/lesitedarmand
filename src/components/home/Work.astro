@@ -47,7 +47,7 @@ const payload = projects.map((p) => ({
       ? { kind: 'video', src: url(p.media.src), poster: url(p.media.poster) }
       : p.media.kind === 'image'
         ? { kind: 'image', src: url(p.media.src), fit: p.media.fit }
-        : { kind: 'phones', framed: p.media.framed, screens: p.media.screens.map((s) => ({ src: url(s.src), alt: s.alt })) },
+        : { kind: 'phones', framed: p.media.framed, screens: p.media.screens.map((s, n) => ({ src: url(s.src), alt: t.screen(p.title, n + 1) })) },
 }));
 
 const strings = {
@@ -115,17 +115,17 @@ const strings = {
             <div class={`media media--${p.media.kind}${p.media.kind === 'image' ? ` media--${p.media.fit}` : ''}`}>
               {p.media.kind === 'video' && (
                 <>
-                  <img src={url(p.media.poster)} alt="" loading={i < 8 ? 'eager' : 'lazy'} decoding="async" />
+                  <img src={url(p.media.poster)} alt={t.preview(p.title, p[lang].sector)} loading={i < 8 ? 'eager' : 'lazy'} decoding="async" />
                   <video data-src={url(p.media.src)} muted loop playsinline preload="none" disablepictureinpicture></video>
                 </>
               )}
               {p.media.kind === 'image' && (
-                <img src={url(p.media.src)} alt="" loading={i < 8 ? 'eager' : 'lazy'} decoding="async" />
+                <img src={url(p.media.src)} alt={t.preview(p.title, p[lang].sector)} loading={i < 8 ? 'eager' : 'lazy'} decoding="async" />
               )}
               {p.media.kind === 'phones' && (
                 <div class={`fan${p.media.framed ? ' fan--framed' : ''}`}>
-                  {p.media.screens.slice(0, 3).map((s) => (
-                    <span class="fan__phone"><img src={url(s.src)} alt="" loading="lazy" decoding="async" /></span>
+                  {p.media.screens.slice(0, 3).map((s, n) => (
+                    <span class="fan__phone"><img src={url(s.src)} alt={t.screen(p.title, n + 1)} loading="lazy" decoding="async" /></span>
                   ))}
                 </div>
               )}

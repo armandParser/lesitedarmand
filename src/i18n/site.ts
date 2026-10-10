@@ -49,6 +49,8 @@ export const site = {
       empty: 'Aucun projet ne correspond à ces filtres.',
       reset: 'Réinitialiser les filtres',
       open: (t: string) => `Ouvrir ${t}`,
+      preview: (t: string, sector: string) => `Aperçu de ${t}, ${sector}`,
+      screen: (t: string, n: number) => `${t}, écran ${n}`,
     },
     modal: {
       close: 'Fermer',
@@ -143,6 +145,8 @@ export const site = {
       empty: 'No project matches these filters.',
       reset: 'Reset filters',
       open: (t: string) => `Open ${t}`,
+      preview: (t: string, sector: string) => `${t} preview, ${sector}`,
+      screen: (t: string, n: number) => `${t}, screen ${n}`,
     },
     modal: {
       close: 'Close',
