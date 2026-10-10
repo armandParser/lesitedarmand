@@ -190,7 +190,7 @@ const mobileProjects: Project[] = apps.map((a) => {
   const c = classify[a.slug];
   if (!c) throw new Error(`projects.ts: no classification for "${a.slug}"`);
   return {
-    slug: a.slug, title: a.name, ...c,
+    slug: a.slug, title: a.name, ...c, href: a.href,
     media: {
       kind: 'phones',
       framed: a.needsBorders,

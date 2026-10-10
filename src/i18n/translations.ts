@@ -117,6 +117,8 @@ export interface AppEntry {
   slug: string;
   needsBorders: boolean;
   accent: string;
+  /** Landing page or live site, shown as "Visit site". */
+  href?: string;
   fr: { tagline: string };
   en: { tagline: string };
   screens: AppScreen[];
@@ -170,6 +172,7 @@ export const apps: AppEntry[] = [
     slug: "marges",
     needsBorders: false,
     accent: "#0EA5A4",
+    href: 'https://marges.madebyarm.app',
     fr: { tagline: 'Gestion de bar et restaurant tout-en-un' },
     en: { tagline: 'All-in-one restaurant management app' },
     screens: [
