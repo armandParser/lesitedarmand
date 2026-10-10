@@ -3,9 +3,9 @@ import { indexProjects, apps, type Lang } from '../i18n/translations';
 /**
  * Unified project catalogue for the portfolio grid.
  *
- * Independent web projects and mobile apps are derived from the existing
- * `indexProjects` / `apps` lists (so the /card page and this page never drift);
- * Parser studio work is declared here. `classify` below is the single place to
+ * Independent web projects and mobile apps are derived from the
+ * `indexProjects` / `apps` lists in i18n/translations.ts; Parser studio work
+ * is declared here. `classify` below is the single place to
  * retag a project or change who built it.
  */
 
@@ -147,7 +147,7 @@ const parserProjects: Project[] = [
   },
 ];
 
-/* ── Independent projects listed only here (not on the /card page) ── */
+/* ── Independent projects declared directly here ── */
 const ownProjects: Project[] = [
   {
     slug: 'restoration-monitor', title: 'Restoration Monitor', kinds: ['webapp'], source: 'independent', tint: '#65a30d',

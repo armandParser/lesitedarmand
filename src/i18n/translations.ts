@@ -1,34 +1,5 @@
 export type Lang = 'fr' | 'en';
 
-export const ui = {
-  fr: {
-    pageTitle: 'Armand Collier — Développeur web',
-    heroDesc: "Développeur web depuis 2020, créateur d'interfaces modernes et expériences numériques sur mesure.",
-    indexTagline: 'Projets personnels ou professionnels réalisés dans les 12 derniers mois.',
-    cardTagline: 'Projets personnels ou professionnels réalisés au cours des 12 derniers mois.',
-    contact: 'Contact',
-    langSwitch: 'EN',
-    mobileTitle: 'Applications mobile',
-    mobileHint: 'Touchez un écran pour agrandir',
-    lbClose: 'Fermer',
-    lbPrev: 'Écran précédent',
-    lbNext: 'Écran suivant',
-  },
-  en: {
-    pageTitle: 'Armand Collier — Web Developer',
-    heroDesc: 'Web developer since 2020, crafting modern interfaces and bespoke digital experiences.',
-    indexTagline: 'Personal and professional projects from the last 12 months.',
-    cardTagline: 'Personal and professional projects from the last 12 months.',
-    contact: 'Contact',
-    langSwitch: 'FR',
-    mobileTitle: 'Mobile Apps',
-    mobileHint: 'Tap a screen to zoom',
-    lbClose: 'Close',
-    lbPrev: 'Previous screen',
-    lbNext: 'Next screen',
-  },
-} as const;
-
 export interface ProjectEntry {
   title: string;
   fr: { desc: string; meta: string };
@@ -135,8 +106,6 @@ export const indexProjects: ProjectEntry[] = [
     image: 'findmyfootballclub.jpg',
   },
 ];
-
-export const cardProjects: ProjectEntry[] = indexProjects.filter(p => p.title !== 'Hidden Games');
 
 export interface AppScreen {
   src: string;
