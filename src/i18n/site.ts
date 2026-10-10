@@ -5,7 +5,7 @@ export const site = {
   fr: {
     title: 'Armand Collier · Ingénieur fullstack, SaaS et apps mobiles',
     description:
-      "Ingénieur fullstack à Bordeaux. Je conçois, développe et lance des produits complets : plateformes SaaS, apps mobiles et sites web. Cofondateur du studio Parser.",
+      "Ingénieur fullstack à Bordeaux. Je conçois, développe et lance des produits complets, seul ou en équipe : plateformes SaaS, apps mobiles et sites web. Cofondateur du studio Parser.",
     skip: 'Aller au contenu',
     nav: { work: 'Projets', expertise: 'Expertise', about: 'À propos', contact: 'Contact', cta: 'Démarrer un projet', menu: 'Menu', theme: 'Changer de thème', lang: 'English', langShort: 'EN' },
     hero: {
@@ -13,7 +13,7 @@ export const site = {
       roles: ['Ingénieur fullstack', 'Créateur de SaaS', 'Développeur mobile', 'Cofondateur de Parser'],
       location: 'Bordeaux, France · Remote',
       lead:
-        "Je conçois, développe et mets en production des produits complets, seul ou avec mon studio. Plateformes SaaS, apps mobiles et sites web, de la première maquette à la base de données en production.",
+        "Je conçois, développe et mets en production des produits complets, seul, avec mon studio ou au sein de votre équipe. Plateformes SaaS, apps mobiles et sites web, de la première maquette à la base de données en production.",
       primary: 'Voir les projets',
       secondary: 'Démarrer un projet',
       verified: 'Profil vérifié',
@@ -22,7 +22,7 @@ export const site = {
     expertise: {
       kicker: 'Expertise',
       title: 'Toute la stack,\nune seule personne',
-      sub: "Pas de passage de relais entre designer, développeurs front, back et mobile. Une même personne tient chaque couche, donc les décisions restent rapides et cohérentes.",
+      sub: "Seul, je tiens chaque couche du produit : pas de passage de relais, des décisions rapides et cohérentes. En équipe, je parle le langage de chaque métier, du design au front, au back et au mobile, et je fais le lien entre designers et développeurs.",
       seen: 'Voir',
       stackTitle: 'Langages, frameworks et librairies',
       items: [
@@ -73,7 +73,7 @@ export const site = {
       kicker: 'À propos',
       title: 'Je construis des produits depuis 2018',
       body: [
-        "J’ai commencé comme CTO et product owner d’Escenci, une startup healthtech, de 2018 à 2024. Aujourd’hui je codirige Parser, un studio logiciel à Bordeaux, où j’emmène des produits de l’idée au lancement : design, front, back et mobile.",
+        "J’ai commencé comme CTO et product owner d’Escenci, une startup healthtech, de 2018 à 2024. Aujourd’hui je codirige Parser, un studio logiciel à Bordeaux, où j’emmène des produits de l’idée au lancement : design, front, back et mobile, en solo ou aux côtés d’autres designers et développeurs.",
         'À côté des projets clients, je lance mes propres outils, jeux et apps, surtout pour tester des idées directement en production.',
       ],
       parserRole: 'Cofondateur · Développeur et designer',
@@ -83,13 +83,13 @@ export const site = {
       now: 'Aujourd’hui',
       before: 'Avant',
       escenciRole: 'CTO et product owner',
-      escenciBody: 'Startup healthtech. Six ans à la tête de la technique et du produit : architecture, livraison et feuille de route produit.',
+      escenciBody: 'Startup healthtech. Six ans à la tête de la technique et du produit, avec l’équipe : architecture, livraison et feuille de route produit.',
       escenciTags: ['Healthtech', 'CTO', 'Product owner', '6 ans'],
       escenciProject: 'Voir Sunrise',
     },
     contact: {
       title: 'Une idée ?\nConstruisons-la ensemble.',
-      sub: 'Envoyez-moi quelques lignes sur votre produit, je vous dirai comment je le construirais.',
+      sub: 'Envoyez-moi quelques lignes sur votre produit ou votre équipe. Je vous dirai comment je le construirais, ou comment je peux m’y intégrer.',
       email: 'M’écrire',
       copy: 'Copier l’email',
       copied: 'Email copié',
@@ -99,7 +99,7 @@ export const site = {
   en: {
     title: 'Armand Collier · Fullstack engineer, SaaS and mobile apps',
     description:
-      'Fullstack engineer in Bordeaux. I design, build and launch complete products: SaaS platforms, mobile apps and websites. Co-founder of the Parser studio.',
+      'Fullstack engineer in Bordeaux. I design, build and launch complete products, solo or as part of a team: SaaS platforms, mobile apps and websites. Co-founder of the Parser studio.',
     skip: 'Skip to content',
     nav: { work: 'Work', expertise: 'Expertise', about: 'About', contact: 'Contact', cta: 'Start a project', menu: 'Menu', theme: 'Toggle theme', lang: 'Français', langShort: 'FR' },
     hero: {
@@ -107,7 +107,7 @@ export const site = {
       roles: ['Fullstack engineer', 'SaaS builder', 'Mobile developer', 'Co-founder at Parser'],
       location: 'Bordeaux, France · Remote',
       lead:
-        'I design, build and ship complete products, on my own or with my studio. SaaS platforms, mobile apps and websites, from the first wireframe to the production database.',
+        'I design, build and ship complete products, on my own, with my studio or as part of your team. SaaS platforms, mobile apps and websites, from the first wireframe to the production database.',
       primary: 'Explore my work',
       secondary: 'Start a project',
       verified: 'Verified profile',
@@ -116,7 +116,7 @@ export const site = {
     expertise: {
       kicker: 'Expertise',
       title: 'The whole stack,\none person',
-      sub: 'No handoffs between designer, frontend, backend and mobile developers. The same person owns every layer, so decisions stay fast and consistent.',
+      sub: 'On my own, I own every layer: no handoffs, so decisions stay fast and consistent. On a team, I speak every discipline’s language, from design to frontend, backend and mobile, and help designers and developers work as one.',
       seen: 'See',
       stackTitle: 'Languages, frameworks and libraries',
       items: [
@@ -167,7 +167,7 @@ export const site = {
       kicker: 'About',
       title: 'Building products since 2018',
       body: [
-        'I started as CTO and product owner of Escenci, a healthtech startup, from 2018 to 2024. Today I co-run Parser, a software studio in Bordeaux, where I take products from idea to launch: design, frontend, backend and mobile.',
+        'I started as CTO and product owner of Escenci, a healthtech startup, from 2018 to 2024. Today I co-run Parser, a software studio in Bordeaux, where I take products from idea to launch: design, frontend, backend and mobile, solo or alongside other designers and developers.',
         'Outside client work I ship my own tools, games and apps, mostly to try ideas directly in production.',
       ],
       parserRole: 'Co-founder · Developer and designer',
@@ -177,13 +177,13 @@ export const site = {
       now: 'Now',
       before: 'Previously',
       escenciRole: 'CTO and product owner',
-      escenciBody: 'Healthtech startup. Six years leading technology and product: architecture, delivery and the product roadmap.',
+      escenciBody: 'Healthtech startup. Six years leading technology and product with the team: architecture, delivery and the product roadmap.',
       escenciTags: ['Healthtech', 'CTO', 'Product owner', '6 years'],
       escenciProject: 'See Sunrise',
     },
     contact: {
       title: 'Have an idea?\nLet’s build it together.',
-      sub: 'Send me a few lines about your product and I’ll tell you how I would build it.',
+      sub: 'Send me a few lines about your product or your team. I’ll tell you how I would build it, or how I’d fit in.',
       email: 'Email me',
       copy: 'Copy email',
       copied: 'Email copied',
