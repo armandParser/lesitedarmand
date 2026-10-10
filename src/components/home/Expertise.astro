@@ -3,7 +3,6 @@ import Icon from '../Icon.astro';
 import { site } from '../../i18n/site';
 import { projects } from '../../data/projects';
 import { stack } from '../../data/stack';
-import type { IconName } from '../../data/icons';
 import type { Lang } from '../../i18n/translations';
 
 interface Props {
@@ -24,21 +23,20 @@ const titleOf = (slug: string) => projects.find((p) => p.slug === slug)?.title ?
 
     <ol class="layers">
       {t.items.map((item, i) => (
-        <li class="layer reveal" style={`--delay:${(i % 3) * 80}ms`}>
-          <div class="layer__top">
-            <span class="layer__icon"><Icon name={item.icon as IconName} size={24} /></span>
-            <span class="layer__n">{String(i + 1).padStart(2, '0')}</span>
-          </div>
+        <li class="layer reveal" style={`--delay:${i * 60}ms`}>
+          <span class="layer__n">{String(i + 1).padStart(2, '0')}</span>
           <h3 class="layer__title">{item.title}</h3>
           <p class="layer__body">{item.body}</p>
-          <div class="layer__refs">
+          <ul class="layer__refs">
             {item.refs.map((slug) => (
-              <a href={`#${slug}`} class="ref">
-                {t.seen} {titleOf(slug)}
-                <Icon name="arrow-up-right" size={12} />
-              </a>
+              <li>
+                <a href={`#${slug}`} class="ref" aria-label={`${t.seen} ${titleOf(slug)}`}>
+                  {titleOf(slug)}
+                  <Icon name="arrow-up-right" size={12} />
+                </a>
+              </li>
             ))}
-          </div>
+          </ul>
         </li>
       ))}
     </ol>
@@ -70,61 +68,54 @@ const titleOf = (slug: string) => projects.find((p) => p.slug === slug)?.title ?
 <style>
   .expertise { background: var(--surface-2); transition: background-color 400ms var(--ease); }
 
-  .layers {
-    list-style: none;
-    display: grid; gap: 16px; margin-top: 40px;
-    grid-template-columns: 1fr;
-  }
-  @media (min-width: 640px) { .layers { grid-template-columns: repeat(2, 1fr); } }
-  @media (min-width: 1024px) { .layers { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
-
+  /* Editorial index: one hairline-separated row per layer, no cards. */
+  .layers { list-style: none; margin-top: 48px; border-bottom: 1px solid var(--border); }
   .layer {
-    display: flex; flex-direction: column; gap: 8px;
-    padding: 24px; border-radius: 24px;
-    background: var(--surface); border: 1px solid var(--border);
-    transition: transform 500ms var(--ease), box-shadow 500ms var(--ease), opacity 900ms var(--ease), filter 900ms var(--ease);
+    display: grid; gap: 8px 24px; padding-block: 24px;
+    grid-template-columns: 40px 1fr;
+    grid-template-areas: 'n title' '. body' '. refs';
+    border-top: 1px solid var(--border);
+    transition: opacity 900ms var(--ease), filter 900ms var(--ease), transform 900ms var(--ease);
   }
-  .layer:hover { box-shadow: var(--shadow-md); }
-  .layer__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .layer__icon {
-    display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px;
-    background: var(--accent-soft); color: var(--accent);
+  @media (min-width: 1024px) {
+    .layer {
+      grid-template-columns: 56px minmax(0, 4fr) minmax(0, 5fr) minmax(0, 3fr);
+      grid-template-areas: 'n title body refs';
+      align-items: baseline; padding-block: 32px;
+    }
   }
-  .layer__n { font-family: var(--mono); font-size: 0.75rem; line-height: 1rem; color: var(--faint); }
-  .layer__title { font-size: 1.125rem; line-height: 1.75rem; }
-  .layer__body { color: var(--muted); font-size: 0.875rem; line-height: 1.25rem; flex: 1; }
-  .layer__refs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .layer__n {
+    grid-area: n; font-family: var(--mono); font-size: 0.75rem; line-height: 1.75rem;
+    color: var(--faint); transition: color 300ms var(--ease);
+  }
+  .layer:hover .layer__n { color: var(--accent); }
+  .layer__title { grid-area: title; font-size: 1.25rem; line-height: 1.75rem; letter-spacing: -0.01em; }
+  .layer__body { grid-area: body; color: var(--muted); font-size: 0.9375rem; line-height: 1.5rem; max-width: 46ch; }
+  .layer__refs { grid-area: refs; list-style: none; display: flex; flex-wrap: wrap; gap: 4px 20px; }
+  @media (min-width: 1024px) { .layer__refs { flex-direction: column; align-items: flex-start; } }
   .ref {
     display: inline-flex; align-items: center; gap: 4px;
-    padding: 4px 12px; border-radius: 9999px;
-    background: var(--surface-2); color: var(--text);
-    font-size: 0.75rem; line-height: 1rem; font-weight: 500; text-decoration: none;
-    transition: background-color 300ms var(--ease), transform 300ms var(--ease);
+    color: var(--text); font-size: 0.875rem; line-height: 1.5rem; text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size 400ms var(--ease), color 300ms var(--ease);
   }
-  .ref:hover { background: var(--surface-3); transform: translateY(-1px); }
-  .ref:active { transform: scale(0.98); }
+  .ref :global(svg) { color: var(--faint); transition: color 300ms var(--ease), transform 300ms var(--ease); }
+  .ref:hover { background-size: 100% 1px; }
+  .ref:hover :global(svg) { color: var(--accent); transform: translate(1px, -1px); }
 
-  /* Toolbox: one row per layer, label on the left, chips on the right. */
-  .stack {
-    margin-top: 24px; padding: 24px; border-radius: 24px;
-    background: var(--surface); border: 1px solid var(--border);
-  }
-  @media (min-width: 768px) { .stack { padding: 32px; } }
-  .stack__title { font-size: 1.125rem; line-height: 1.75rem; }
-  .stack__groups { display: grid; margin-top: 8px; }
-  .stack__group {
-    display: grid; gap: 8px; padding-block: 16px;
-  }
-  .stack__group + .stack__group { box-shadow: 0 -1px 0 var(--border); }
-  @media (min-width: 768px) { .stack__group { grid-template-columns: 160px 1fr; gap: 24px; align-items: baseline; } }
-  .stack__group dt { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; color: var(--muted); }
-  .stack__group ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  /* Toolbox: same hairline language, label on the left, plain mono list on the right. */
+  .stack { margin-top: 64px; }
+  .stack__title { font-family: var(--mono); font-size: 0.75rem; line-height: 1rem; font-weight: 400; color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; }
+  .stack__groups { display: grid; margin-top: 16px; border-bottom: 1px solid var(--border); }
+  .stack__group { display: grid; gap: 8px; padding-block: 16px; border-top: 1px solid var(--border); }
+  @media (min-width: 768px) { .stack__group { grid-template-columns: 200px 1fr; gap: 24px; align-items: baseline; } }
+  .stack__group dt { font-size: 0.875rem; line-height: 1.5rem; font-weight: 500; }
+  .stack__group ul { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 20px; }
   .stack__group li {
-    padding: 4px 12px; border-radius: 9999px; background: var(--surface-2);
-    font-family: var(--mono); font-size: 0.75rem; line-height: 1rem;
-    transition: background-color 300ms var(--ease);
+    font-family: var(--mono); font-size: 0.8125rem; line-height: 1.5rem; color: var(--muted);
+    transition: color 300ms var(--ease);
   }
-  .stack__group li:hover { background: var(--surface-3); }
+  .stack__group li:hover { color: var(--text); }
 
   /* ── Tagline: words light up one by one as they cross the reading line ── */
   .tagline { padding-block: 96px; }
