@@ -150,6 +150,19 @@ const parserProjects: Project[] = [
 /* ── Independent projects declared directly here ── */
 const ownProjects: Project[] = [
   {
+    slug: 'gameface', title: 'Gameface', kinds: ['website'], source: 'independent', tint: '#ff6b2c',
+    href: 'https://gameface.madebyarm.app',
+    media: { kind: 'video', src: 'previews/gameface.mp4', poster: 'previews/gameface-poster.jpg' },
+    fr: {
+      desc: "Jeux 3D sur mesure pour les marques, jouables dans le navigateur. Rendu en direct avec three.js : une île en temps réel, et un joueur qui devient le personnage à partir d'une photo.",
+      sector: 'Jeux · 3D',
+    },
+    en: {
+      desc: 'Custom 3D browser games for brands. Rendered live with three.js: a real-time island, and players who become the main character from a photo.',
+      sector: 'Games · 3D',
+    },
+  },
+  {
     slug: 'restoration-monitor', title: 'Restoration Monitor', kinds: ['webapp'], source: 'independent', tint: '#65a30d',
     href: 'https://greenwatching.madebyarm.app',
     media: { kind: 'image', src: 'previews/restoration-monitor.webp', fit: 'cover' },
@@ -205,7 +218,7 @@ const all = [...parserProjects, ...ownProjects, ...webProjects, ...mobileProject
 
 /** Display order: product work first, marketing sites last. Unlisted slugs go to the end. */
 const order = [
-  'formalis', 'laisse-toi-guider', 'restoration-monitor', 'keysper', 'maggie-editor', 'sunrise', 'marges', 'tldfetch', 'vents-et-marees',
+  'formalis', 'laisse-toi-guider', 'gameface', 'restoration-monitor', 'keysper', 'maggie-editor', 'sunrise', 'marges', 'tldfetch', 'vents-et-marees',
   'sprin', 'tenders', 'bits2beat', 'hidden-games', 'marauder', 'ramen-cup', 'pocket',
   'tivitracker', 'antekao', 'drams-react', 'find-my-football-club', 'kimi-antonelli', 'parser-lab',
   'la-gragna-guette', 'liftov-bordeaux', 'oyo-escapes', 'bauer-debarras',
