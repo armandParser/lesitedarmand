@@ -131,7 +131,13 @@ const strings = {
               )}
               {p.source !== 'independent' && (
                 <span class="badge">
-                  <span class="badge__mark" aria-hidden="true">{p.source === 'parser' ? 'P' : 'E'}</span>{t.source[p.source]}
+                  <span class="badge__mark" aria-hidden="true">{p.source === 'parser' ? (
+                    <svg class="badge__dots" viewBox="0 0 12 12">
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                        <circle cx={2 + (i % 3) * 4} cy={2 + Math.floor(i / 3) * 4} r="1.35" fill={[1, 5, 6].includes(i) ? '#499df8' : '#fff'} />
+                      ))}
+                    </svg>
+                  ) : 'E'}</span>{t.source[p.source]}
                 </span>
               )}
               <span class="kind-chip" aria-hidden="true"><Icon name={kindIcons[p.kinds[0]]} size={16} /></span>
@@ -375,6 +381,7 @@ const strings = {
     display: grid; place-items: center; width: 20px; height: 20px; border-radius: 9999px;
     background: #111; color: #fff; font-size: 0.75rem; line-height: 1rem; font-weight: 700;
   }
+  .badge__dots { width: 12px; height: 12px; }
   .kind-chip {
     position: absolute; top: 12px; right: 12px; z-index: 2;
     display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9999px;

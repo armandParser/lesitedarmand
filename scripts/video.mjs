@@ -69,7 +69,8 @@ async function recordSite({ slug, url, scrollDuration = 2000 }) {
         function step(t) {
           const p = Math.min((t - t0) / dur, 1);
           const e = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
-          window.scrollTo(0, e * vh);
+          // 'instant' so a site's CSS scroll-behavior: smooth doesn't fight each step
+          window.scrollTo({ top: e * vh, behavior: 'instant' });
           if (p < 1) requestAnimationFrame(step);
           else resolve();
         }
